@@ -187,17 +187,21 @@ const PaperSelectionSection: React.FC<PaperSelectionSectionProps> = ({
               </span>
             )}
           </button>
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={jobConfig.quantities['13x20']['4/4'] > 0 && jobConfig.quantities['13x20']['4/0'] === 0}
-              onChange={(e) => handleColorCheckbox('4/4', e.target.checked)}
-              className="w-4 h-4 text-brand-gold border-2 border-gray-300 rounded focus:ring-brand-gold"
-            />
-            <span className="text-sm font-medium text-gray-700">
-              4/4 (Both Sides){totalSheetsNeeded > 0 ? ` - ${totalSheetsNeeded} sheets` : ''}
-            </span>
-          </label>
+          <button
+            className={`px-6 py-3 rounded-lg border-2 font-medium transition-all duration-200 ${
+              jobConfig.quantities['13x20']['4/4'] > 0 
+                ? 'bg-brand-gold text-white border-brand-gold shadow-lg transform scale-105' 
+                : 'bg-white text-gray-600 border-gray-300 hover:border-brand-gold hover:text-brand-gold'
+            }`}
+            onClick={() => selectColorOption('4/4')}
+          >
+            4/4 (Both Sides)
+            {totalSheetsNeeded > 0 && jobConfig.quantities['13x20']['4/4'] > 0 && (
+              <span className="block text-xs mt-1 opacity-90">
+                {totalSheetsNeeded} sheets
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
