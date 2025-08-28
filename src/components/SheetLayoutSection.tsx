@@ -15,6 +15,10 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
   const [finishedWidth, setFinishedWidth] = useState(4);
   const [finishedHeight, setFinishedHeight] = useState(6);
   
+  // Manual override for pieces per sheet
+  const [manualOverride, setManualOverride] = useState(false);
+  const [manualPiecesPerSheet, setManualPiecesPerSheet] = useState(0);
+  
   
   // Layout results
   const [layout, setLayout] = useState({ 
@@ -107,12 +111,21 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
     }
     
     setLayout(bestLayout);
-    onLayoutUpdate?.(bestLayout.total);
+    
+    // Use manual override if enabled, otherwise use calculated value
+    const effectivePiecesPerSheet = manualOverride ? manualPiecesPerSheet : bestLayout.total;
+    console.log('SheetLayoutSection - calling onLayoutUpdate with:', {
+      manualOverride,
+      manualPiecesPerSheet,
+      calculatedTotal: bestLayout.total,
+      effectivePiecesPerSheet
+    });
+    onLayoutUpdate?.(effectivePiecesPerSheet);
   };
   
   useEffect(() => {
     calculateLayout();
-  }, [parentWidth, parentHeight, finishedWidth, finishedHeight]);
+  }, [parentWidth, parentHeight, finishedWidth, finishedHeight, manualOverride, manualPiecesPerSheet]);
   
   // Common parent sheet sizes (horizontal orientation as typically fed in press)
   const commonSizes = [
@@ -225,6 +238,9 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
             />
             <p className="text-xs text-gray-500 italic">
               Calculated optimum: {layout.total} pieces per sheet
+              {manualOverride && (
+                <span className="text-brand-orange font-medium"> (overridden)</span>
+              )}
             </p>
           </div>
         </div>
@@ -235,8 +251,12 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
           
           <div className="bg-gradient-to-br from-brand-pale-blue to-blue-50 p-4 rounded-lg border border-brand-darker-blue">
             <div className="text-center mb-3">
-              <div className="font-bold text-3xl text-brand-indigo">{layout.total} out</div>
-              <div className="text-sm text-gray-600">per sheet</div>
+              <div className="font-bold text-3xl text-brand-indigo">
+                {manualOverride ? manualPiecesPerSheet : layout.total} out
+              </div>
+              <div className="text-sm text-gray-600">
+                per sheet {manualOverride ? '(manual)' : '(calculated)'}
+              </div>
             </div>
             <div className="text-xs text-gray-600 text-center mb-2">
               {layout.cols} columns × {layout.rows} rows
@@ -249,19 +269,61 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
             <div className="border-t border-blue-200 pt-3 text-center">
               <div className="text-sm font-medium text-gray-700">Total Sheets Needed:</div>
               <div className="font-bold text-2xl text-brand-indigo">
-                {yieldValue > 0 && layout.total > 0 ? Math.ceil(yieldValue / layout.total) : 0}
+                {yieldValue > 0 && (manualOverride ? manualPiecesPerSheet : layout.total) > 0 ? 
+                  Math.ceil(yieldValue / (manualOverride ? manualPiecesPerSheet : layout.total)) : 0}
               </div>
               <div className="text-xs text-gray-500">
                 {yieldValue > 0 ? `for ${yieldValue.toLocaleString()} pieces` : 'Enter quantity above'}
               </div>
             </div>
           </div>
+          
+          {/* Manual Override Controls */}
+          <div className="bg-gradient-to-br from-brand-pale-gold to-yellow-50 p-4 rounded-lg border-2 border-brand-gold">
+            <div className="flex items-center space-x-2 mb-3">
+              <input
+                type="checkbox"
+                id="manualOverride"
+                checked={manualOverride}
+                onChange={(e) => {
+                  setManualOverride(e.target.checked);
+                  if (e.target.checked && manualPiecesPerSheet === 0) {
+                    setManualPiecesPerSheet(layout.total);
+                  }
+                }}
+                className="w-4 h-4 text-brand-gold border-2 border-gray-300 rounded focus:ring-brand-gold"
+              />
+              <label htmlFor="manualOverride" className="text-sm font-bold text-brand-indigo cursor-pointer">
+                🔧 Manual Override
+              </label>
+            </div>
+            
+            {manualOverride && (
+              <div className="space-y-2">
+                <input
+                  type="number"
+                  value={manualPiecesPerSheet === 0 ? '' : manualPiecesPerSheet}
+                  onChange={(e) => setManualPiecesPerSheet(parseInt(e.target.value) || 0)}
+                  className="w-full px-3 py-2 text-sm border-2 border-brand-gold rounded-md focus:ring-2 focus:ring-brand-gold bg-white transition-colors font-bold text-center"
+                  min="1"
+                  placeholder="Custom pieces per sheet"
+                />
+                <p className="text-xs text-gray-600 text-center">
+                  Overriding calculated optimum of <span className="font-medium">{layout.total}</span> pieces per sheet
+                </p>
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Column 3 & 4 - Large Visual Preview */}
         {layout.total > 0 && (
           <div className="lg:col-span-2 space-y-3">
-            <h3 className="font-semibold text-gray-700 text-sm">Visual Preview</h3>
+            <h3 className="font-semibold text-gray-700 text-sm">
+              Visual Preview {manualOverride && manualPiecesPerSheet > 0 && (
+                <span className="text-brand-orange font-medium">(Manual: {manualPiecesPerSheet} pieces)</span>
+              )}
+            </h3>
             
             <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 p-4 rounded-lg flex justify-center items-center">
               <div 
@@ -287,32 +349,67 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
                   {/* Centered imposition area */}
                   {layout.total > 0 && (
                     <div
-                      className="bg-blue-100 border border-blue-300"
+                      className={`border ${manualOverride ? 'bg-yellow-100 border-yellow-400' : 'bg-blue-100 border-blue-300'}`}
                       style={{
                         width: `${(layout.usedWidth / (parentWidth - margin * 2)) * 100}%`,
                         height: `${(layout.usedHeight / (parentHeight - margin * 2)) * 100}%`
                       }}
                     >
-                      {/* Grid of pieces - contained within boundaries */}
-                      <div 
-                        className="grid gap-px bg-blue-200 h-full w-full"
-                        style={{ 
-                          gridTemplateColumns: `repeat(${layout.cols}, 1fr)`,
-                          gridTemplateRows: `repeat(${layout.rows}, 1fr)`,
-                          overflow: 'hidden'
-                        }}
-                      >
-                        {Array.from({ length: layout.total }, (_, i) => (
-                          <div 
-                            key={i} 
-                            className="bg-blue-400 border border-blue-600 flex items-center justify-center"
-                          >
-                            <span className="text-xs font-bold text-white" style={{ fontSize: '9px' }}>
-                              {i + 1}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                      {/* Grid of pieces - show manual override or calculated layout */}
+                      {manualOverride && manualPiecesPerSheet > 0 ? (
+                        // Manual override: show custom number of pieces using calculated layout proportions
+                        <div 
+                          className="grid gap-px bg-yellow-200 h-full w-full"
+                          style={{ 
+                            gridTemplateColumns: `repeat(${layout.cols}, 1fr)`,
+                            gridTemplateRows: `repeat(${layout.rows}, 1fr)`,
+                            overflow: 'hidden'
+                          }}
+                        >
+                          {Array.from({ length: Math.max(layout.total, manualPiecesPerSheet) }, (_, i) => (
+                            <div 
+                              key={i} 
+                              className={`border flex items-center justify-center ${
+                                i < manualPiecesPerSheet 
+                                  ? 'bg-yellow-400 border-yellow-600' 
+                                  : 'bg-gray-200 border-gray-300 opacity-50'
+                              }`}
+                            >
+                              {i < manualPiecesPerSheet && (
+                                <span className="text-xs font-bold text-yellow-900" style={{ fontSize: '9px' }}>
+                                  {i + 1}
+                                </span>
+                              )}
+                              {i >= manualPiecesPerSheet && i < layout.total && (
+                                <span className="text-xs text-gray-400" style={{ fontSize: '8px' }}>
+                                  ✗
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        // Calculated layout: show actual grid layout
+                        <div 
+                          className="grid gap-px bg-blue-200 h-full w-full"
+                          style={{ 
+                            gridTemplateColumns: `repeat(${layout.cols}, 1fr)`,
+                            gridTemplateRows: `repeat(${layout.rows}, 1fr)`,
+                            overflow: 'hidden'
+                          }}
+                        >
+                          {Array.from({ length: layout.total }, (_, i) => (
+                            <div 
+                              key={i} 
+                              className="bg-blue-400 border border-blue-600 flex items-center justify-center"
+                            >
+                              <span className="text-xs font-bold text-white" style={{ fontSize: '9px' }}>
+                                {i + 1}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -330,8 +427,8 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
                 <span>Margin</span>
               </div>
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-blue-400 border border-blue-600 mr-1"></div>
-                <span>Pieces</span>
+                <div className={`w-3 h-3 border mr-1 ${manualOverride ? 'bg-yellow-400 border-yellow-600' : 'bg-blue-400 border-blue-600'}`}></div>
+                <span>Pieces {manualOverride ? '(Manual)' : '(Calculated)'}</span>
               </div>
             </div>
           </div>

@@ -168,10 +168,21 @@ Based on Excel reference data:
 
 ## Excel Reference Integration
 
-This application was built to match an existing Excel-based pricing system:
-- `Reference/tab1.xlsx`: Master pricing data and rates
-- `Reference/tab-2-only.xlsx`: Sample calculation for validation
-- Key rates and formulas extracted and implemented in TypeScript
+This application was built to match an existing Excel-based pricing system. All reference files and analysis tools are stored in the project's Reference folder:
+
+### Reference Files
+- Excel source files:
+  - `tab1.xlsx`: Master pricing data and rates
+  - `tab-2-only.xlsx`: Sample calculation for validation
+- Generated JSON data:
+  - `dbf_master_data.json`: Master pricing database
+  - `detailed_data_analysis.json`: Detailed pricing analysis
+  - `formula_analysis.json`: Extracted Excel formulas
+- Python analysis tools (for reference only):
+  - Excel analysis and data extraction scripts
+  - DBF data processing utilities
+
+The extracted rates and formulas have been implemented in TypeScript and are now maintained in the application's data layer.
 
 ## Development Notes
 
@@ -180,6 +191,8 @@ This application was built to match an existing Excel-based pricing system:
 - Implemented direct quantity usage for Nexpress labor (not yield-derived)
 - Added comprehensive paper stock library with Excel-based pricing
 - Integrated 25% overhead rate and configurable profit margins
+- Moved all reference files and analysis tools to Reference folder
+- Completed initial data extraction and analysis phase
 
 ### Future Enhancements
 - Enhanced paper selection UI/UX

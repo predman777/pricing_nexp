@@ -41,8 +41,8 @@ const PaperSelectionSection: React.FC<PaperSelectionSectionProps> = ({
   // Handle checkbox changes for auto-populating quantities
   const handleColorCheckbox = (type: '4/0' | '4/4', checked: boolean) => {
     if (checked) {
-      // Set the selected type to totalSheetsNeeded (or 1 if no total) and clear the other
-      const valueToSet = totalSheetsNeeded > 0 ? totalSheetsNeeded : 1;
+      // Set the selected type to totalSheetsNeeded (or 0 if no total) and clear the other
+      const valueToSet = totalSheetsNeeded > 0 ? totalSheetsNeeded : 0;
       const newQuantities = { ...jobConfig.quantities };
       if (type === '4/0') {
         newQuantities['13x20']['4/0'] = valueToSet;
@@ -105,17 +105,29 @@ const PaperSelectionSection: React.FC<PaperSelectionSectionProps> = ({
 
   // Auto-populate quantities when totalSheetsNeeded changes
   React.useEffect(() => {
-    // Only auto-populate if we have a calculated total and both current quantities are zero
+    console.log('Auto-populate useEffect triggered:', {
+      totalSheetsNeeded,
+      current4_0: jobConfig.quantities['13x20']['4/0'],
+      current4_4: jobConfig.quantities['13x20']['4/4']
+    });
+    
+    // Auto-populate if we have a calculated total
     if (totalSheetsNeeded > 0) {
       const current4_0 = jobConfig.quantities['13x20']['4/0'];
       const current4_4 = jobConfig.quantities['13x20']['4/4'];
       
-      // Auto-populate 4/0 with total sheets needed when current quantities are zero
-      if (current4_0 === 0 && current4_4 === 0) {
-        updateQuantity('13x20', '4/0', totalSheetsNeeded);
+      // Auto-populate 4/0 with total sheets needed only when:
+      // 1. Both quantities are zero (first time)
+      // 2. Current 4/0 value doesn't match totalSheetsNeeded and 4/4 is zero
+      if ((current4_0 === 0 && current4_4 === 0) || (current4_0 !== totalSheetsNeeded && current4_0 > 0 && current4_4 === 0)) {
+        console.log('Auto-populating 4/0 with:', totalSheetsNeeded);
+        const newQuantities = { ...jobConfig.quantities };
+        newQuantities['13x20']['4/0'] = totalSheetsNeeded;
+        newQuantities['13x20']['4/4'] = 0;
+        onUpdate({ quantities: newQuantities });
       }
     }
-  }, [totalSheetsNeeded]);
+  }, [totalSheetsNeeded]); // Only depend on totalSheetsNeeded to avoid infinite loop
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 border border-brand-darker-blue">
