@@ -25,32 +25,62 @@ const CalculationResultsSection: React.FC<CalculationResultsSectionProps> = ({
   if (!results) {
     return (
       <div className="bg-gradient-to-br from-gray-400 to-gray-600 rounded-xl shadow-2xl p-6 border-2 border-gray-400 opacity-60">
-              <h2 className="text-2xl font-bold text-white mb-6 font-display flex items-center">
-        Calculation Results
-        <span className="ml-3 text-sm text-gray-200 font-normal">(Enter quantities to calculate)</span>
-      </h2>
+        <h2 className="text-2xl font-bold text-white mb-6 font-display flex items-center">
+          Calculation Results
+          <span className="ml-3 text-sm text-gray-200 font-normal">(Enter quantities to calculate)</span>
+        </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Greyed Cost Breakdown */}
+          {/* Greyed Cost Breakdown - Detailed Structure */}
           <div className="bg-white/70 backdrop-blur rounded-lg p-5">
             <h3 className="text-lg font-bold text-gray-500 mb-4 border-b-2 border-gray-300 pb-2">
               Cost Breakdown
             </h3>
             
             <div className="space-y-2">
-              <div className="flex justify-between items-center py-1">
-                <span className="text-gray-500">Paper Cost:</span>
-                <span className="font-semibold text-gray-400">$0.00</span>
+              {/* Paper Cost Detailed Breakdown */}
+              <div className="border-b pb-2">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-gray-500 font-semibold">Paper Cost:</span>
+                  <span className="font-bold text-gray-400">$0.00</span>
+                </div>
+                <div className="pl-4 space-y-1">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">13x20 4/0:</span>
+                    <span className="text-gray-400">$0.00</span>
+                  </div>
+                  <div className="text-xs text-gray-400 pl-2 space-y-0.5">
+                    <div>• Quantity: 0 sheets × $0.000 = $0.00</div>
+                    <div>• Setup sheets: 0 × $0.000 = $0.00</div>
+                    <div className="font-medium">• Total: 0 sheets = $0.00</div>
+                  </div>
+                </div>
               </div>
               
-              <div className="flex justify-between items-center py-1">
-                <span className="text-gray-500">Protective Coating:</span>
-                <span className="font-semibold text-gray-400">$0.00</span>
-              </div>
-              
-              <div className="flex justify-between items-center py-1">
-                <span className="text-gray-500">Consumables:</span>
-                <span className="font-semibold text-gray-400">$0.00</span>
+              {/* Consumables Detailed Breakdown */}
+              <div className="border-b pb-2">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-gray-500 font-semibold">Consumables:</span>
+                  <span className="font-bold text-gray-400">$0.00</span>
+                </div>
+                <div className="pl-4 space-y-1">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">ORC's Standard:</span>
+                    <span className="text-gray-400">$0.00</span>
+                  </div>
+                  <div className="text-xs text-gray-400 pl-2 space-y-0.5">
+                    <div>• Formula: (quantity × 2) + 10 sheets × $0.000/sheet</div>
+                    <div className="font-medium">• Total: $0.00</div>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">NEXPRESS Maintenance:</span>
+                    <span className="text-gray-400">$0.00</span>
+                  </div>
+                  <div className="text-xs text-gray-400 pl-2 space-y-0.5">
+                    <div>• 0 sheets × $0.000000/sheet</div>
+                    <div className="font-medium">• Total: $0.00</div>
+                  </div>
+                </div>
               </div>
               
               <div className="border-t pt-2">
@@ -59,141 +89,145 @@ const CalculationResultsSection: React.FC<CalculationResultsSectionProps> = ({
                   <span className="font-bold text-gray-400">$0.00</span>
                 </div>
                 
-                <div className="flex justify-between items-center py-1 pl-4">
-                  <span className="text-gray-400 text-sm">Pre Press:</span>
-                  <span className="text-gray-400 text-sm">$0.00</span>
+                <div className="pl-4 space-y-1">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">Pre Press:</span>
+                    <span className="text-gray-400">$0.00</span>
+                  </div>
+                  <div className="text-xs text-gray-400 pl-2">
+                    0 hrs × $150.00/hr
+                  </div>
                 </div>
                 
-                <div className="flex justify-between items-center py-1 pl-4">
-                  <span className="text-gray-400 text-sm">Variable Data:</span>
-                  <span className="text-gray-400 text-sm">$0.00</span>
+                <div className="pl-4 space-y-1">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">Bindery:</span>
+                    <span className="text-gray-400">$0.00</span>
+                  </div>
+                  <div className="text-xs text-gray-400 pl-2">
+                    0 hrs × $65.00/hr
+                  </div>
                 </div>
                 
-                <div className="flex justify-between items-center py-1 pl-4">
-                  <span className="text-gray-400 text-sm">Bindery:</span>
-                  <span className="text-gray-400 text-sm">$0.00</span>
+                <div className="pl-4 space-y-1">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">Nexpress Labor:</span>
+                    <span className="text-gray-400">$0.00</span>
+                  </div>
+                  <div className="text-xs text-gray-400 pl-2 space-y-0.5">
+                    <div>• 4/0 rate: $0.045/sheet | 4/4 rate: ${jobConfig.nexpressLabor4_4Rate || 0.079}/sheet</div>
+                    <div>• Total: 0 sheets × blended rate</div>
+                    <div className="font-medium">• Cost: $0.00</div>
+                  </div>
                 </div>
+              </div>
+              
+              {/* Subtotal Before Multiplier */}
+              <div className="border-t-2 border-gray-400 pt-2 mt-2">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-gray-500 font-bold">Subtotal (before multiplier):</span>
+                  <span className="font-bold text-lg text-gray-400">$0.00</span>
+                </div>
+              </div>
+              
+              {/* Calibrated Multiplier Line Item */}
+              <div className="border-t pt-2">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-gray-400 font-semibold">
+                    + Calibrated Multiplier (100%):
+                  </span>
+                  <span className="font-bold text-gray-400">+$0.00</span>
+                </div>
+                <div className="text-xs text-gray-400 pl-4">
+                  Applied to paper, consumables, and nexpress labor based on 0 sheet quantity
+                </div>
+              </div>
+              
+              {/* Subtotal After Multiplier */}
+              <div className="border-t pt-2">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-gray-400 font-bold">= Subtotal (with multiplier):</span>
+                  <span className="font-bold text-xl text-gray-400">$0.00</span>
+                </div>
+              </div>
+              
+              {/* Overhead */}
+              <div className="border-t pt-2">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-gray-500 font-bold">+ Overhead ({(jobConfig.overheadRate * 100).toFixed(0)}%):</span>
+                  <span className="font-bold text-lg text-gray-400">$0.00</span>
+                </div>
+                <div className="text-xs text-gray-400 pl-4">
+                  Facility costs, utilities, equipment depreciation, and general business expenses
+                </div>
+              </div>
+              
+              {/* Final Total Cost */}
+              <div className="border-t-2 border-gray-300 pt-3 mt-2">
+                <div className="bg-gray-200/70 p-3 rounded border-2 border-gray-300">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500 font-bold text-xl">TOTAL COST:</span>
+                    <span className="font-bold text-3xl text-gray-400">$0.00</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Calibrated Multiplier Explanation */}
+              <div className="mt-3 p-3 bg-gray-100/70 rounded border border-gray-300">
+                <p className="text-xs text-gray-500 font-medium mb-1">Why Calibrated Multiplier Increases with Volume:</p>
+                <ul className="text-xs text-gray-500 space-y-0.5 pl-2">
+                  <li>• Setup costs spread over more pieces (economies of scale)</li>
+                  <li>• Better material rates achieved on larger orders</li>
+                  <li>• Production efficiency improves on longer runs</li>
+                  <li>• Higher volume jobs justify premium pricing in printing industry</li>
+                </ul>
               </div>
             </div>
           </div>
 
-          {/* Greyed Totals and Profit */}
+          {/* Greyed Final Results Only - No Pricing Controls */}
           <div className="space-y-4">
-            {/* Greyed Subtotals */}
-            <div className="bg-white/70 backdrop-blur rounded-lg p-5">
-              <h3 className="text-lg font-bold text-gray-500 mb-4 border-b-2 border-gray-300 pb-2">
-                Totals
+            {/* Greyed Final Results */}
+            <div className="bg-gray-200/70 backdrop-blur rounded-lg p-5 border-2 border-gray-400 shadow-lg">
+              <h3 className="text-lg font-bold text-gray-500 mb-4">
+                Final Quote
               </h3>
               
               <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500">Sub Total:</span>
-                  <span className="font-bold text-lg text-gray-400">$0.00</span>
+                <div className="bg-white/60 rounded p-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-500 font-medium">Total Cost:</span>
+                    <span className="font-bold text-lg text-gray-400">$0.00</span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Includes overhead at {(jobConfig.overheadRate * 100).toFixed(0)}%
+                  </div>
                 </div>
                 
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500">Overhead ({(jobConfig.overheadRate * 100).toFixed(0)}%):</span>
-                  <span className="font-bold text-lg text-gray-400">$0.00</span>
+                <div className="bg-white/60 rounded p-3">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-gray-500">Profit Margin ({(jobConfig.costMultiplier * 100).toFixed(0)}%):</span>
+                    <span className="font-bold text-lg text-gray-400">$0.00</span>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    Final Cost Multiplier: {(jobConfig.costMultiplier * 100).toFixed(0)}% applied to total cost
+                  </div>
                 </div>
                 
-                <div className="flex justify-between items-center border-t pt-3">
-                  <span className="text-gray-500 font-bold">Total Cost:</span>
-                  <span className="font-bold text-xl text-gray-400">$0.00</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Active Profit Calculation */}
-            <div className="bg-gradient-to-br from-brand-gold to-yellow-400 rounded-lg p-5 border-2 border-white shadow-lg">
-              <h3 className="text-lg font-bold text-brand-indigo mb-4">
-                Profit Configuration
-              </h3>
-              
-              {/* Calibrated Multiplier Override */}
-              <div className="mb-4 border-b border-brand-indigo pb-3">
-                <label className="block text-sm font-bold text-brand-indigo mb-2">
-                  Calibrated Multiplier Override (%)
-                </label>
-                <div className="flex items-center space-x-2">
-                    <input
-                      type="number"
-                      value={jobConfig.calibratedMultiplier ? (jobConfig.calibratedMultiplier * 100) : 100}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value);
-                        if (!isNaN(value) && value >= 100) {
-                          onUpdate({ calibratedMultiplier: value / 100 });
-                        } else if (e.target.value === '') {
-                          onUpdate({ calibratedMultiplier: undefined });
-                        }
-                      }}
-                    className="flex-1 px-3 py-2 border-2 border-brand-indigo rounded focus:ring-2 focus:ring-white focus:border-white font-bold text-center text-lg"
-                    min="100"
-                    step="1"
-                  />
-                  <span className="text-lg font-bold text-brand-indigo">%</span>
-                </div>
-                <p className="text-xs text-brand-indigo mt-1">
-                  {jobConfig.calibratedMultiplier ? 
-                    'Overriding automatic curve' : 
-                    'Using automatic curve (100-153% based on sheet count)'
-                  }
-                </p>
-              </div>
-              
-              {/* 4/4 Nexpress Rate Override */}
-              <div className="mb-4 border-b border-brand-indigo pb-3">
-                <label className="block text-sm font-bold text-brand-indigo mb-2">
-                  Nexpress 4/4 Rate ($/sheet)
-                </label>
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg font-bold text-brand-indigo">$</span>
-                  <input
-                    type="number"
-                    value={jobConfig.nexpressLabor4_4Rate || 0.079}
-                    onChange={(e) => onUpdate({ nexpressLabor4_4Rate: parseFloat(e.target.value) || 0.079 })}
-                    className="flex-1 px-3 py-2 border-2 border-brand-indigo rounded focus:ring-2 focus:ring-white focus:border-white font-bold text-center text-lg"
-                    min="0"
-                    step="0.001"
-                  />
-                </div>
-                <p className="text-xs text-brand-indigo mt-1">
-                  Labor rate per sheet for 4/4 color printing
-                </p>
-              </div>
-
-              {/* Final Cost Multiplier */}
-              <div className="mb-4">
-                <label className="block text-sm font-bold text-brand-indigo mb-2">
-                  Final Cost Multiplier (%)
-                </label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="number"
-                    value={jobConfig.costMultiplier * 100}
-                    onChange={(e) => onUpdate({ costMultiplier: (parseFloat(e.target.value) || 100) / 100 })}
-                    className="flex-1 px-3 py-2 border-2 border-brand-indigo rounded focus:ring-2 focus:ring-white focus:border-white font-bold text-center text-lg"
-                    min="100"
-                    step="5"
-                  />
-                  <span className="text-lg font-bold text-brand-indigo">%</span>
-                </div>
-                <p className="text-sm text-brand-indigo mt-1">Applied to total cost for final price</p>
-              </div>
-              
-              <div className="space-y-3 border-t-2 border-brand-indigo pt-3">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-brand-indigo">Profit:</span>
-                  <span className="font-bold text-lg text-gray-500">$0.00</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-brand-indigo">FINAL PRICE:</span>
-                  <span className="font-bold text-2xl text-gray-500">$0.00</span>
-                </div>
-                
-                <div className="flex justify-between items-center bg-white/80 rounded p-2">
-                  <span className="font-bold text-brand-indigo">Cost Per Piece:</span>
-                  <span className="font-bold text-xl text-gray-500">$0.00</span>
+                <div className="bg-gray-400/70 text-white rounded p-4 border-2 border-gray-500">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-lg">FINAL PRICE:</span>
+                    <span className="font-bold text-3xl text-gray-200">$0.00</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold">Cost Per Piece:</span>
+                    <span className="font-bold text-xl text-gray-200">$0.00</span>
+                  </div>
+                  
+                  <div className="text-xs text-gray-300 mt-2 text-center">
+                    Based on 0 pieces yield
+                  </div>
                 </div>
               </div>
             </div>

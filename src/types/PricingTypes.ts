@@ -29,6 +29,7 @@ export interface JobConfig {
   jobNumber: string;
   description: string;
   customer: string;
+  customerEmail: string;
   yield: number;
   gloss: 0 | 1;
   selectedPaper: string;

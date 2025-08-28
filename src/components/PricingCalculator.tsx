@@ -32,6 +32,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ pricingData }) =>
     jobNumber: '',
     description: '',
     customer: '',
+    customerEmail: '',
     yield: 0,
     gloss: 0,
     selectedPaper: paperStocks[0].id,
