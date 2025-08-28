@@ -251,115 +251,172 @@ const PaperSelectionSection: React.FC<PaperSelectionSectionProps> = ({
       </div>
 
 
-      {/* Business Cards Quick Selection */}
-      <div className="mt-6 p-4 bg-brand-pale-gold rounded-lg border-2 border-brand-gold">
-        <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="enableBusinessCards"
-            checked={jobConfig.businessCards.quantity > 0}
-            onChange={(e) => {
-              if (e.target.checked) {
-                onUpdate({ 
-                  businessCards: { 
-                    ...jobConfig.businessCards, 
-                    quantity: 1000,
-                    perSheet: 30
-                  }
-                });
-              } else {
-                onUpdate({ 
-                  businessCards: { 
-                    ...jobConfig.businessCards, 
-                    quantity: 0
-                  }
-                });
-              }
-            }}
-            className="w-5 h-5 text-brand-gold border-2 border-gray-300 rounded focus:ring-brand-gold mr-3"
-          />
-          <label htmlFor="enableBusinessCards" className="text-lg font-bold text-brand-indigo cursor-pointer">
-            📄 Business Cards
-          </label>
-        </div>
-        
-        {jobConfig.businessCards.quantity > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Cards per sheet
-              </label>
-              <input
-                type="number"
-                value={jobConfig.businessCards.perSheet}
-                onChange={(e) => onUpdate({ 
-                  businessCards: { 
-                    ...jobConfig.businessCards, 
-                    perSheet: parseInt(e.target.value) || 0 
-                  }
-                })}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                12Pt / 111# Top Coat
-              </label>
-              <select
-                value={jobConfig.businessCards.topCoat ? "1" : "0"}
-                onChange={(e) => onUpdate({ 
-                  businessCards: { 
-                    ...jobConfig.businessCards, 
-                    topCoat: e.target.value === "1" 
-                  }
-                })}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
-              >
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Sides glossed
-              </label>
-              <select
-                value={jobConfig.businessCards.sidesGlossed}
-                onChange={(e) => onUpdate({ 
-                  businessCards: { 
-                    ...jobConfig.businessCards, 
-                    sidesGlossed: parseInt(e.target.value) 
-                  }
-                })}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
-              >
-                <option value={0}>0</option>
-                <option value={1}>1 side @ $65.00 / 1000 cards</option>
-                <option value={2}>2 sides @ $95.00 / 1000 cards</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Quantity
-              </label>
-              <input
-                type="number"
-                value={jobConfig.businessCards.quantity}
-                onChange={(e) => onUpdate({ 
-                  businessCards: { 
-                    ...jobConfig.businessCards, 
-                    quantity: parseInt(e.target.value) || 0 
-                  }
-                })}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
-                min="0"
-                step="100"
-                placeholder="Number of cards"
-              />
-            </div>
+      {/* Business Cards Quick Selection - Hidden for now */}
+      {false && (
+        <div className="mt-6 p-4 bg-brand-pale-gold rounded-lg border-2 border-brand-gold">
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="enableBusinessCards"
+              checked={jobConfig.businessCards.quantity > 0}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onUpdate({ 
+                    businessCards: { 
+                      ...jobConfig.businessCards, 
+                      quantity: 1000,
+                      perSheet: 30
+                    }
+                  });
+                } else {
+                  onUpdate({ 
+                    businessCards: { 
+                      ...jobConfig.businessCards, 
+                      quantity: 0
+                    }
+                  });
+                }
+              }}
+              className="w-5 h-5 text-brand-gold border-2 border-gray-300 rounded focus:ring-brand-gold mr-3"
+            />
+            <label htmlFor="enableBusinessCards" className="text-lg font-bold text-brand-indigo cursor-pointer">
+              Business Cards
+            </label>
           </div>
-        )}
+          
+          {jobConfig.businessCards.quantity > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Cards per sheet
+                </label>
+                <input
+                  type="number"
+                  value={jobConfig.businessCards.perSheet}
+                  onChange={(e) => onUpdate({ 
+                    businessCards: { 
+                      ...jobConfig.businessCards, 
+                      perSheet: parseInt(e.target.value) || 0 
+                    }
+                  })}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                  min="0"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  12Pt / 111# Top Coat
+                </label>
+                <select
+                  value={jobConfig.businessCards.topCoat ? "1" : "0"}
+                  onChange={(e) => onUpdate({ 
+                    businessCards: { 
+                      ...jobConfig.businessCards, 
+                      topCoat: e.target.value === "1" 
+                    }
+                  })}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                >
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Sides glossed
+                </label>
+                <select
+                  value={jobConfig.businessCards.sidesGlossed}
+                  onChange={(e) => onUpdate({ 
+                    businessCards: { 
+                      ...jobConfig.businessCards, 
+                      sidesGlossed: parseInt(e.target.value) 
+                    }
+                  })}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                >
+                  <option value={0}>0</option>
+                  <option value={1}>1 side @ $65.00 / 1000 cards</option>
+                  <option value={2}>2 sides @ $95.00 / 1000 cards</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Quantity
+                </label>
+                <input
+                  type="number"
+                  value={jobConfig.businessCards.quantity}
+                  onChange={(e) => onUpdate({ 
+                    businessCards: { 
+                      ...jobConfig.businessCards, 
+                      quantity: parseInt(e.target.value) || 0 
+                    }
+                  })}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                  min="0"
+                  step="100"
+                  placeholder="Number of cards"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Additional Costs */}
+      <div className="mt-6 bg-gray-50 rounded-xl shadow-lg p-6 border border-gray-300">
+        <h3 className="text-lg font-bold text-brand-indigo mb-4 font-display">Additional Costs</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Bindery Time */}
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Bindery Time (hours)
+            </label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="number"
+                value={jobConfig.binderyTime || ''}
+                onChange={(e) => onUpdate({ binderyTime: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
+                className="w-20 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                min="0"
+                step="0.25"
+                placeholder="0.25"
+              />
+              <span className="text-sm text-gray-500 whitespace-nowrap">@ $65/hr</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Cost: <span className="font-semibold text-blue-700">
+                ${((jobConfig.binderyTime || 0) * 65).toFixed(2)}
+              </span>
+            </p>
+          </div>
+
+          {/* Pre Press Time */}
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Pre Press Time (hours)
+            </label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="number"
+                value={jobConfig.prePresTime || ''}
+                onChange={(e) => onUpdate({ prePresTime: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
+                className="w-20 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                min="0"
+                step="0.25"
+                placeholder="0.1"
+              />
+              <span className="text-sm text-gray-500 whitespace-nowrap">@ $150/hr</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Cost: <span className="font-semibold text-blue-700">
+                ${((jobConfig.prePresTime || 0) * 150).toFixed(2)}
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

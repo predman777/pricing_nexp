@@ -136,7 +136,7 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
   
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-      <h2 className="text-lg font-bold text-brand-indigo mb-4 font-display">📏 Sheet Layout Calculator</h2>
+      <h2 className="text-lg font-bold text-brand-indigo mb-4 font-display">Sheet Layout Calculator</h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Column 1 - Input Controls */}
@@ -294,7 +294,7 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
                 className="w-4 h-4 text-brand-gold border-2 border-gray-300 rounded focus:ring-brand-gold"
               />
               <label htmlFor="manualOverride" className="text-sm font-bold text-brand-indigo cursor-pointer">
-                🔧 Manual Override
+                Manual Override
               </label>
             </div>
             
@@ -382,7 +382,7 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
                               )}
                               {i >= manualPiecesPerSheet && i < layout.total && (
                                 <span className="text-xs text-gray-400" style={{ fontSize: '8px' }}>
-                                  ✗
+                                  ×
                                 </span>
                               )}
                             </div>
