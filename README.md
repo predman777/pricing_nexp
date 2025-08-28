@@ -1,215 +1,243 @@
-# Pricing Calculator Application
+# Commercial Printing Pricing Calculator
 
-A comprehensive web-based pricing calculator for print jobs using React, TypeScript, and Vite. This application calculates accurate pricing for digital printing jobs including paper costs, consumables, labor, and facility overheads.
+A comprehensive web-based pricing calculator for commercial printing jobs built with React, TypeScript, and Vite. This application provides accurate pricing calculations for digital printing including paper costs, consumables, labor, and facility overheads with an intuitive user interface.
 
-## Overview
+## 🎯 Overview
 
-This application was developed to match pricing calculations from an existing Excel-based system, ensuring accuracy in:
-- Paper cost calculations using actual sheet quantities
-- Nexpress labor calculations based on sheet count (not yield-derived)
-- ORC consumables with proper 4/0 and 4/4 color rates
-- Press operator labor, maintenance contracts, and facility overheads
-- 25% overhead rate and configurable profit margins
+This application was developed to replace and improve upon an existing Excel-based pricing system, ensuring accuracy and ease of use for commercial printing quote generation. It handles complex calculations for various print job configurations while maintaining transparency in cost breakdown.
 
-## Features
+## ✨ Key Features
 
 ### Core Functionality
-- **Paper Selection**: Choose from various paper stocks (cover, text, label, specialty)
-- **Quantity Input**: Enter quantities for 8.5x11 and 14x20 sizes in 4/0 and 4/4 color modes
-- **Labor Calculations**: Pre-press, variable data, bindery, and Nexpress press operator labor
-- **Consumables**: ORC standard consumables and Nexpress maintenance contracts
-- **Business Cards**: Separate pricing for business card orders with top coat options
-- **Services**: Postal handling, outsource services, and glosser operations
-- **Profit Calculation**: Configurable overhead rates and cost multipliers
+- **📋 Job Information**: Job number, description, and customer tracking
+- **📄 Paper Selection**: Comprehensive paper stock library with real-time pricing
+- **📐 Sheet Layout Calculator**: Automatic layout optimization with manual override option
+- **💰 Additional Costs**: Bindery and pre-press time tracking with live cost calculation
+- **🎨 Color Configuration**: 4/0 and 4/4 color options with automatic quantity population
+- **📊 Detailed Cost Breakdown**: Transparent pricing with step-by-step calculations
+- **⚙️ Profit Controls**: Configurable overhead rates and final cost multipliers
 
-### Key Components
+### Advanced Features
+- **Smart Auto-Population**: Automatically populates 4/0 quantities based on sheet layout calculations
+- **Manual Override**: Override calculated pieces per sheet for custom layouts
+- **Visual Preview**: Real-time visual representation of sheet layouts
+- **Calibrated Multiplier**: Volume-based pricing adjustments with detailed explanations
+- **Professional Interface**: Clean, emoji-free design for business use
 
-#### 1. Job Info Section (`JobInfoSection.tsx`)
-- Job number, description, customer fields
-- Yield input (final quantity expected)
-- Gloss setting (0 or 1)
+## 🏗️ Application Structure
 
-#### 2. Paper Selection Section (`PaperSelectionSection.tsx`)
-- Dropdown selection of available papers
-- Custom paper option with user-defined pricing
-- Real-time cost calculation display
+### Main Sections
 
-#### 3. Labor Section (`LaborSection.tsx`)
-- Pre-press time input (hours)
-- Variable data development time
-- Bindery time requirements
-- **Nexpress labor calculation**: Uses actual sheet quantities, not yield-derived sheets
-- Glosser operation inputs
+#### 1. Job Information (`JobInfoSection.tsx`)
+- Job number and description
+- Customer information
+- Streamlined interface (removed duplicate labor inputs)
 
-#### 4. Services Section (`ServicesSection.tsx`)
-- Business card quantity and specifications
-- Postal service options
-- Outsource service configurations
+#### 2. Sheet Layout Calculator (`SheetLayoutSection.tsx`)
+- **Automatic Layout Optimization**: Calculates best fit for piece dimensions on sheet sizes
+- **Manual Override**: Option to specify custom pieces per sheet
+- **Visual Preview**: Interactive grid showing layout with proper proportions
+- **Total Sheets Calculation**: Automatically calculates sheets needed based on yield and layout
 
-#### 5. Calculation Results Section (`CalculationResultsSection.tsx`)
-- Detailed cost breakdown
-- Paper costs, consumables, labor costs
-- Overhead and profit calculations
-- Final pricing and cost per piece
+#### 3. Paper & Size Selection (`PaperSelectionSection.tsx`)
+- **Paper Stock Selection**: Dropdown with comprehensive paper library
+- **Custom Paper Option**: User-defined pricing for special stocks
+- **Quantity Configuration**: 4/0 and 4/4 quantities with smart auto-population
+- **Additional Costs Section**: 
+  - Bindery Time (@ $65/hr)
+  - Pre Press Time (@ $150/hr)
+  - Live cost calculations
 
-## Technical Architecture
+#### 4. Cost Breakdown & Results (`CalculationResultsSection.tsx`)
+- **Detailed Cost Analysis**:
+  - Paper costs (including setup sheets: 5 for 4/0, 15 for 4/4)
+  - Consumables (ORC's Standard formula: (quantity × 2) + 10 sheets)
+  - Labor breakdown (Nexpress rates: $0.045/sheet for 4/0, $0.079/sheet for 4/4)
+  - Business cards (when applicable)
+- **Pricing Flow**:
+  - Subtotal (before multiplier)
+  - Calibrated Multiplier application
+  - Subtotal (with multiplier)
+  - Overhead (25% facility costs)
+  - Final total cost
+- **Final Quote Section**:
+  - Total cost and cost per piece
+  - Final Cost Multiplier (1% increments, 125% default)
+  - Profit margin display
+
+## 💡 Key Improvements Made
+
+### User Experience Enhancements
+- ✅ **Fixed Auto-Population**: 4/0 quantities now properly auto-populate from sheet calculations
+- ✅ **Manual Override System**: Users can override calculated pieces per sheet
+- ✅ **Professional Design**: Removed all emoji icons for business-appropriate interface
+- ✅ **Improved Input Handling**: Final Cost Multiplier accepts 1% increments and manual entry
+- ✅ **Organized Layout**: Moved labor inputs to logical "Additional Costs" section
+- ✅ **Hidden Business Cards**: Temporarily hidden until needed
+
+### Technical Improvements
+- ✅ **Fixed Infinite Re-render Loop**: Resolved React useEffect dependency issues
+- ✅ **Enhanced Cost Transparency**: Detailed breakdown showing all cost components
+- ✅ **Calibrated Multiplier Explanation**: Added business logic explanation for volume pricing
+- ✅ **Visual Preview Accuracy**: Manual override layouts maintain proper proportions
+
+## 🔧 Technical Architecture
 
 ### File Structure
 ```
 src/
 ├── components/           # React components
+│   ├── JobInfoSection.tsx
+│   ├── SheetLayoutSection.tsx
+│   ├── PaperSelectionSection.tsx
+│   ├── CalculationResultsSection.tsx
+│   └── PricingCalculator.tsx
 ├── data/                # Static pricing data
-├── hooks/               # Custom React hooks
-├── services/            # Business logic and calculations
-├── types/               # TypeScript type definitions
-└── App.tsx              # Main application component
+│   └── pricingData.ts
+├── services/            # Business logic
+│   └── calculationServiceDynamic.ts
+├── types/               # TypeScript definitions
+│   └── PricingTypes.ts
+└── App.tsx              # Main application
 ```
 
-### Key Files
+### Key Technologies
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** for responsive styling
+- **Custom hooks** for state management
 
-#### Data Layer
-- `src/data/pricingData.ts`: Paper stocks, consumables, labor rates, and master configuration
-- `src/types/PricingTypes.ts`: TypeScript interfaces for type safety
+## 📊 Pricing Logic
 
-#### Business Logic
-- `src/services/calculationServiceDynamic.ts`: Core pricing calculations
-- Handles paper costing, consumables, labor, overhead, and profit calculations
-- **Important**: Uses quantities directly as sheet counts for Nexpress labor calculations
+### Paper Costs
+- Uses actual sheet quantities (not yield-derived)
+- Includes setup sheets: 5 sheets for 4/0, 15 sheets for 4/4
+- Real-time cost calculation based on selected paper stock
 
-#### Components
-- Modular React components for each section of the calculator
-- Real-time updates using React hooks
-- Responsive design with Tailwind CSS
+### Labor Calculations
+- **Nexpress Rates**: $0.045/sheet (4/0), $0.079/sheet (4/4)
+- **Pre-press**: $150/hour
+- **Bindery**: $65/hour
+- **Variable Data**: $95/hour
 
-## Installation & Setup
+### Consumables
+- **ORC Standard**: Formula-based on quantity: `(quantity × 2) + 10 sheets`
+- **Nexpress Maintenance**: $0.032/sheet
+
+### Pricing Flow
+1. Calculate base costs (paper, consumables, labor)
+2. Apply Calibrated Multiplier (volume-based pricing adjustment)
+3. Add Overhead (25% for facility costs, utilities, equipment)
+4. Apply Final Cost Multiplier (default 125%, user adjustable)
+
+### Calibrated Multiplier Logic
+Volume-based pricing that increases with larger orders to account for:
+- Setup and preparation time distribution
+- Equipment efficiency optimization
+- Quality control requirements
+- Resource allocation planning
+
+## 🚀 Installation & Usage
 
 ### Prerequisites
 - Node.js (v16 or higher)
 - npm or yarn
 
-### Installation
+### Quick Start
 ```bash
+# Navigate to project directory
+cd pricing-calculator
+
 # Install dependencies
 npm install
 
 # Start development server
-npm run dev
+npm start
 
 # Build for production
 npm run build
-
-# Preview production build
-npm run preview
 ```
 
-## Configuration
+### Development Server
+- **Local**: http://localhost:3000
+- **Hot Reload**: Automatic refresh on file changes
+- **TypeScript**: Full type checking and IntelliSense
 
-### Paper Stocks
-Paper pricing is configured in `src/data/pricingData.ts`. Each paper has:
-- Name and category classification
-- Pricing for 8.5x11 and 14x20 sizes
-- Available size restrictions
-- Custom paper option for user-defined pricing
+## 📁 Reference Materials
 
-### Labor Rates
-Labor rates are based on Excel reference data:
-- **Press Operator**: $0.045 per sheet ($4,500/month ÷ 100,000 images)
-- **Pre-press**: $150/hour
-- **Variable Data**: $95/hour
-- **Bindery**: $65/hour
-- **Glosser**: $0.30/hour
+The `Reference/` folder contains original Excel files and analysis tools used during development:
+- **Excel Files**: Original pricing spreadsheets
+- **Python Scripts**: Data extraction and analysis tools (legacy)
+- **JSON Data**: Extracted pricing data and formulas
 
-### Consumables
-- **ORC Standard**: $0.032 per sheet (4/0), $0.064 per sheet (4/4)
-- **Nexpress Maintenance**: $0.032 per sheet
+*Note: Python analysis tools are archived for reference. All pricing logic is now implemented in TypeScript.*
 
-### Facility Overheads
-- **Overhead Rate**: 25% of subtotal
-- **Press Charge**: $3,200/month (calculated per image)
-- Electrical and T-1 service costs
+## 🔄 Recent Updates
 
-## Key Calculation Logic
+### Version 2.0 Features
+- **Sheet Layout Calculator**: Automatic optimization with manual override
+- **Additional Costs Section**: Centralized labor input under Paper Selection
+- **Enhanced Cost Breakdown**: Detailed sub-components and explanations
+- **Professional Interface**: Removed decorative elements for business use
+- **Improved Input Validation**: Better handling of edge cases and manual entry
 
-### Sheet Count vs. Yield
-**Critical Implementation Detail**: The application distinguishes between:
-- **Quantities**: Actual sheets run through the press (used for labor and some consumables)
-- **Yield**: Final delivered quantity (used for cost-per-piece calculations)
+### Bug Fixes
+- Fixed auto-population of 4/0 quantities from sheet calculations
+- Resolved infinite re-render loop in quantity updates
+- Fixed Final Cost Multiplier input field behavior
+- Corrected visual preview proportions for manual overrides
 
-For Nexpress labor calculations, the app uses the actual quantity input as sheet count, ensuring accuracy with user expectations.
+## 🎛️ Configuration
 
-### Paper Cost Calculation
-```typescript
-// Uses quantities directly for paper costing
-const sheets = quantity; // Quantity IS the sheet count
-const cost = sheets * costPerSheet;
-```
+### Customizing Rates
+Edit `src/data/pricingData.ts` to modify:
+- Paper stock pricing
+- Labor hourly rates
+- Consumable costs
+- Default overhead percentages
 
-### Labor Cost Calculation
-```typescript
-// Nexpress labor uses total sheets from all sizes/colors
-const nexpressLabor = totalSheets * pressOperatorRate; // $0.045 per sheet
-```
+### Business Logic
+Modify `src/services/calculationServiceDynamic.ts` for:
+- Calculation formulas
+- Setup sheet quantities
+- Multiplier logic
+- Cost categorization
 
-## Testing & Validation
+## 📈 Future Enhancements
 
-### Reference Test Case
-Based on Excel reference data:
-- Job #: 1111
-- Yield: 1000
-- Paper: 100# Cover Gloss
-- Quantity: 100 sheets (8.5x11, 4/0)
-- Expected costs align with Excel calculations
-
-### Known Issues & Improvements
-- **Status**: Still being perfected to match Excel results exactly
-- Paper selection dropdown may need refinement
-- Additional consumables may need to be added
-- Glosser calculations may need fine-tuning
-
-## Excel Reference Integration
-
-This application was built to match an existing Excel-based pricing system. All reference files and analysis tools are stored in the project's Reference folder:
-
-### Reference Files
-- Excel source files:
-  - `tab1.xlsx`: Master pricing data and rates
-  - `tab-2-only.xlsx`: Sample calculation for validation
-- Generated JSON data:
-  - `dbf_master_data.json`: Master pricing database
-  - `detailed_data_analysis.json`: Detailed pricing analysis
-  - `formula_analysis.json`: Extracted Excel formulas
-- Python analysis tools (for reference only):
-  - Excel analysis and data extraction scripts
-  - DBF data processing utilities
-
-The extracted rates and formulas have been implemented in TypeScript and are now maintained in the application's data layer.
-
-## Development Notes
-
-### Recent Changes
-- Fixed TypeScript compilation errors for consumable categories
-- Implemented direct quantity usage for Nexpress labor (not yield-derived)
-- Added comprehensive paper stock library with Excel-based pricing
-- Integrated 25% overhead rate and configurable profit margins
-- Moved all reference files and analysis tools to Reference folder
-- Completed initial data extraction and analysis phase
-
-### Future Enhancements
-- Enhanced paper selection UI/UX
-- Additional consumables and services
-- Improved validation and error handling
-- Export functionality for quotes
+### Planned Features
+- Export functionality for quotes and cost breakdowns
 - Admin panel for rate management
+- Customer database integration
+- Job history and templates
+- Advanced reporting and analytics
 
-## Support & Maintenance
+### Technical Improvements
+- Enhanced error handling and validation
+- Performance optimizations
+- Mobile app version
+- Integration with printing equipment APIs
 
-This application is designed to be maintainable and extensible:
-- Type-safe with comprehensive TypeScript interfaces
-- Modular component architecture
-- Centralized pricing data configuration
-- Clear separation between UI and business logic
+## 🛠️ Development
 
-For modifications to pricing data, rates, or calculations, refer to:
-- `src/data/pricingData.ts` for base rates and paper pricing
-- `src/services/calculationServiceDynamic.ts` for calculation logic
-- `src/types/PricingTypes.ts` for type definitions
+### Code Style
+- TypeScript strict mode enabled
+- ESLint and Prettier configured
+- Consistent component structure
+- Comprehensive type definitions
+
+### Testing Strategy
+- Component unit tests
+- Calculation accuracy validation
+- Cross-browser compatibility testing
+- User acceptance testing with print shop operators
+
+## 📞 Support
+
+This application is designed for commercial printing environments and includes:
+- Comprehensive cost transparency
+- Business-appropriate professional interface
+- Accurate calculations matching industry standards
+- Intuitive workflow for quote generation
+
+For technical issues or feature requests, refer to the component-specific documentation in the source code or contact the development team.
