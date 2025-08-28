@@ -38,24 +38,29 @@ const PaperSelectionSection: React.FC<PaperSelectionSectionProps> = ({
     onUpdate({ quantities: newQuantities });
   };
 
-  // Handle checkbox changes for auto-populating quantities
-  const handleColorCheckbox = (type: '4/0' | '4/4', checked: boolean) => {
-    if (checked) {
-      // Set the selected type to totalSheetsNeeded (or 0 if no total) and clear the other
-      const valueToSet = totalSheetsNeeded > 0 ? totalSheetsNeeded : 0;
+  // Handle toggle button selection for auto-populating quantities
+  const selectColorOption = (type: '4/0' | '4/4') => {
+    // If clicking the already selected option, deselect it
+    if (jobConfig.quantities['13x20'][type] > 0) {
       const newQuantities = { ...jobConfig.quantities };
-      if (type === '4/0') {
-        newQuantities['13x20']['4/0'] = valueToSet;
-        newQuantities['13x20']['4/4'] = 0;
-      } else {
-        newQuantities['13x20']['4/0'] = 0;
-        newQuantities['13x20']['4/4'] = valueToSet;
-      }
+      newQuantities['13x20'][type] = 0;
       onUpdate({ quantities: newQuantities });
-    } else {
-      // Clear the unchecked type
-      updateQuantity('13x20', type, 0);
+      return;
     }
+    
+    // Set the selected type to totalSheetsNeeded (or 0 if no total) and clear the other
+    const valueToSet = totalSheetsNeeded > 0 ? totalSheetsNeeded : 0;
+    const newQuantities = { ...jobConfig.quantities };
+    
+    if (type === '4/0') {
+      newQuantities['13x20']['4/0'] = valueToSet;
+      newQuantities['13x20']['4/4'] = 0;
+    } else {
+      newQuantities['13x20']['4/0'] = 0;
+      newQuantities['13x20']['4/4'] = valueToSet;
+    }
+    
+    onUpdate({ quantities: newQuantities });
   };
 
   const selectedPaper = paperStocks.find(p => p.id === jobConfig.selectedPaper);
@@ -161,23 +166,27 @@ const PaperSelectionSection: React.FC<PaperSelectionSectionProps> = ({
         )}
       </div>
 
-      {/* Color Selection Checkboxes */}
+      {/* Color Selection Toggle Buttons */}
       <div className="mb-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
         <div className="text-sm font-medium text-gray-700 mb-3 text-center">
           Auto-populate quantities{totalSheetsNeeded > 0 ? ` (${totalSheetsNeeded} sheets calculated | ${piecesPerSheet} per sheet)` : ' (no calculation yet)'}:
         </div>
-        <div className="flex justify-center gap-6">
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={jobConfig.quantities['13x20']['4/0'] > 0 && jobConfig.quantities['13x20']['4/4'] === 0}
-              onChange={(e) => handleColorCheckbox('4/0', e.target.checked)}
-              className="w-4 h-4 text-brand-gold border-2 border-gray-300 rounded focus:ring-brand-gold"
-            />
-            <span className="text-sm font-medium text-gray-700">
-              4/0 (One Side){totalSheetsNeeded > 0 ? ` - ${totalSheetsNeeded} sheets` : ''}
-            </span>
-          </label>
+        <div className="flex justify-center gap-4">
+          <button
+            className={`px-6 py-3 rounded-lg border-2 font-medium transition-all duration-200 ${
+              jobConfig.quantities['13x20']['4/0'] > 0 
+                ? 'bg-brand-gold text-white border-brand-gold shadow-lg transform scale-105' 
+                : 'bg-white text-gray-600 border-gray-300 hover:border-brand-gold hover:text-brand-gold'
+            }`}
+            onClick={() => selectColorOption('4/0')}
+          >
+            4/0 (One Side)
+            {totalSheetsNeeded > 0 && jobConfig.quantities['13x20']['4/0'] > 0 && (
+              <span className="block text-xs mt-1 opacity-90">
+                {totalSheetsNeeded} sheets
+              </span>
+            )}
+          </button>
           <label className="flex items-center space-x-2 cursor-pointer">
             <input
               type="checkbox"
