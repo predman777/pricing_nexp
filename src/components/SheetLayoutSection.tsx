@@ -15,10 +15,29 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
   const [finishedWidth, setFinishedWidth] = useState(4);
   const [finishedHeight, setFinishedHeight] = useState(6);
   
+  // Advanced controls - store as strings to allow decimal input
+  const [trimMargin, setTrimMargin] = useState(0.25);
+  const [gripperMargin, setGripperMargin] = useState(0.25);
+  const [horizontalGap, setHorizontalGap] = useState(0.125);
+  const [verticalGap, setVerticalGap] = useState(0.125);
+  const [forceOrientation, setForceOrientation] = useState<'auto' | 'portrait' | 'landscape'>('auto');
+  
+  // Raw input values for decimal handling
+  const [trimMarginInput, setTrimMarginInput] = useState('0.25');
+  const [gripperMarginInput, setGripperMarginInput] = useState('0.25');
+  const [horizontalGapInput, setHorizontalGapInput] = useState('0.125');
+  const [verticalGapInput, setVerticalGapInput] = useState('0.125');
+  const [parentWidthInput, setParentWidthInput] = useState('19');
+  const [parentHeightInput, setParentHeightInput] = useState('13');
+  const [finishedWidthInput, setFinishedWidthInput] = useState('4');
+  const [finishedHeightInput, setFinishedHeightInput] = useState('6');
+  
   // Manual override for pieces per sheet
   const [manualOverride, setManualOverride] = useState(false);
   const [manualPiecesPerSheet, setManualPiecesPerSheet] = useState(0);
   
+  // Show advanced controls
+  const [showAdvanced, setShowAdvanced] = useState(false);
   
   // Layout results
   const [layout, setLayout] = useState({ 
@@ -36,37 +55,77 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
     pieceHeight: 0
   });
   
-  // Standard margins and bleeds for commercial printing
-  const margin = 0.25; // .25" margin all around
+  // Standard bleeds for commercial printing
   const bleed = 0.125; // .125" bleed
-  const gap = 0.125; // Small gap between pieces
+  
+  // Helper function to handle decimal input
+  const handleDecimalInput = (value: string, setValue: (val: number) => void, setInputValue: (val: string) => void, defaultValue: number) => {
+    setInputValue(value);
+    
+    if (value === '' || value === '.') {
+      // Allow empty or just decimal point while typing
+      return;
+    }
+    
+    let processedValue = value;
+    if (value.startsWith('.')) {
+      processedValue = '0' + value;
+    }
+    
+    const num = parseFloat(processedValue);
+    if (!isNaN(num) && num >= 0) {
+      setValue(num);
+    }
+  };
+  
+  const handleDecimalBlur = (value: string, setValue: (val: number) => void, setInputValue: (val: string) => void, defaultValue: number) => {
+    if (value === '' || value === '.') {
+      setValue(defaultValue);
+      setInputValue(defaultValue.toString());
+    } else {
+      let processedValue = value;
+      if (value.startsWith('.')) {
+        processedValue = '0' + value;
+      }
+      const num = parseFloat(processedValue);
+      if (isNaN(num) || num < 0) {
+        setValue(defaultValue);
+        setInputValue(defaultValue.toString());
+      } else {
+        setInputValue(num.toString());
+      }
+    }
+  };
   
   const calculateLayout = () => {
-    // Available area after margins
-    const availableWidth = parentWidth - (margin * 2);
-    const availableHeight = parentHeight - (margin * 2);
+    // Available area after margins (using trim + gripper margins)
+    const availableWidth = parentWidth - (trimMargin * 2);
+    const availableHeight = parentHeight - (trimMargin + gripperMargin);
     
     // Finished piece size with bleed
     const pieceWithBleedWidth = finishedWidth + (bleed * 2);
     const pieceWithBleedHeight = finishedHeight + (bleed * 2);
     
     // Calculate finished piece in portrait orientation (as entered)
-    const portraitPieceCols = Math.floor((availableWidth + gap) / (pieceWithBleedWidth + gap));
-    const portraitPieceRows = Math.floor((availableHeight + gap) / (pieceWithBleedHeight + gap));
+    const portraitPieceCols = Math.floor((availableWidth + horizontalGap) / (pieceWithBleedWidth + horizontalGap));
+    const portraitPieceRows = Math.floor((availableHeight + verticalGap) / (pieceWithBleedHeight + verticalGap));
     const portraitPieceTotal = portraitPieceCols * portraitPieceRows;
-    const portraitUsedWidth = portraitPieceCols * pieceWithBleedWidth + (portraitPieceCols - 1) * gap;
-    const portraitUsedHeight = portraitPieceRows * pieceWithBleedHeight + (portraitPieceRows - 1) * gap;
+    const portraitUsedWidth = portraitPieceCols * pieceWithBleedWidth + (portraitPieceCols - 1) * horizontalGap;
+    const portraitUsedHeight = portraitPieceRows * pieceWithBleedHeight + (portraitPieceRows - 1) * verticalGap;
     
     // Calculate finished piece in landscape orientation (rotated 90°)
-    const landscapePieceCols = Math.floor((availableWidth + gap) / (pieceWithBleedHeight + gap));
-    const landscapePieceRows = Math.floor((availableHeight + gap) / (pieceWithBleedWidth + gap));
+    const landscapePieceCols = Math.floor((availableWidth + horizontalGap) / (pieceWithBleedHeight + horizontalGap));
+    const landscapePieceRows = Math.floor((availableHeight + verticalGap) / (pieceWithBleedWidth + verticalGap));
     const landscapePieceTotal = landscapePieceCols * landscapePieceRows;
-    const landscapeUsedWidth = landscapePieceCols * pieceWithBleedHeight + (landscapePieceCols - 1) * gap;
-    const landscapeUsedHeight = landscapePieceRows * pieceWithBleedWidth + (landscapePieceRows - 1) * gap;
+    const landscapeUsedWidth = landscapePieceCols * pieceWithBleedHeight + (landscapePieceCols - 1) * horizontalGap;
+    const landscapeUsedHeight = landscapePieceRows * pieceWithBleedWidth + (landscapePieceRows - 1) * verticalGap;
     
-    // Choose best orientation for finished piece
+    // Choose orientation based on user preference or auto-calculate
     let bestLayout;
-    if (landscapePieceTotal > portraitPieceTotal) {
+    const shouldUseLandscape = forceOrientation === 'landscape' || 
+      (forceOrientation === 'auto' && landscapePieceTotal > portraitPieceTotal);
+    
+    if (shouldUseLandscape) {
       // Finished piece runs better rotated (landscape)
       const wasteWidth = availableWidth - landscapeUsedWidth;
       const wasteHeight = availableHeight - landscapeUsedHeight;
@@ -87,8 +146,8 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
         pieceWidth: pieceWithBleedHeight, // rotated width
         pieceHeight: pieceWithBleedWidth  // rotated height
       };
-    } else {
-      // Finished piece runs better as entered (portrait)
+            } else {
+      // Use portrait orientation (forced or better calculated)
       const wasteWidth = availableWidth - portraitUsedWidth;
       const wasteHeight = availableHeight - portraitUsedHeight;
       const wasteArea = (wasteWidth * availableHeight) + (portraitUsedWidth * wasteHeight);
@@ -125,7 +184,8 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
   
   useEffect(() => {
     calculateLayout();
-  }, [parentWidth, parentHeight, finishedWidth, finishedHeight, manualOverride, manualPiecesPerSheet]);
+  }, [parentWidth, parentHeight, finishedWidth, finishedHeight, manualOverride, manualPiecesPerSheet, 
+      trimMargin, gripperMargin, horizontalGap, verticalGap, forceOrientation]);
   
   // Common parent sheet sizes (horizontal orientation as typically fed in press)
   const commonSizes = [
@@ -168,24 +228,24 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-1">
                 <input
-                  type="number"
-                  value={parentWidth}
-                  onChange={(e) => setParentWidth(parseFloat(e.target.value) || 0)}
+                  type="text"
+                  value={parentWidthInput}
+                  onChange={(e) => handleDecimalInput(e.target.value, setParentWidth, setParentWidthInput, 19)}
+                  onBlur={(e) => handleDecimalBlur(e.target.value, setParentWidth, setParentWidthInput, 19)}
                   className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-brand-gold"
-                  step="0.25"
-                  min="1"
+                  placeholder="19"
                 />
                 <span className="text-xs text-gray-500">W</span>
               </div>
               <span className="text-xs text-gray-400">×</span>
               <div className="flex items-center space-x-1">
                 <input
-                  type="number"
-                  value={parentHeight}
-                  onChange={(e) => setParentHeight(parseFloat(e.target.value) || 0)}
+                  type="text"
+                  value={parentHeightInput}
+                  onChange={(e) => handleDecimalInput(e.target.value, setParentHeight, setParentHeightInput, 13)}
+                  onBlur={(e) => handleDecimalBlur(e.target.value, setParentHeight, setParentHeightInput, 13)}
                   className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-brand-gold"
-                  step="0.25"
-                  min="1"
+                  placeholder="13"
                 />
                 <span className="text-xs text-gray-500">H</span>
               </div>
@@ -198,31 +258,117 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-1">
                 <input
-                  type="number"
-                  value={finishedWidth}
-                  onChange={(e) => setFinishedWidth(parseFloat(e.target.value) || 0)}
+                  type="text"
+                  value={finishedWidthInput}
+                  onChange={(e) => handleDecimalInput(e.target.value, setFinishedWidth, setFinishedWidthInput, 4)}
+                  onBlur={(e) => handleDecimalBlur(e.target.value, setFinishedWidth, setFinishedWidthInput, 4)}
                   className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-brand-gold"
-                  step="0.125"
-                  min="0.5"
+                  placeholder="4"
                 />
                 <span className="text-xs text-gray-500">W</span>
               </div>
               <span className="text-xs text-gray-400">×</span>
               <div className="flex items-center space-x-1">
                 <input
-                  type="number"
-                  value={finishedHeight}
-                  onChange={(e) => setFinishedHeight(parseFloat(e.target.value) || 0)}
+                  type="text"
+                  value={finishedHeightInput}
+                  onChange={(e) => handleDecimalInput(e.target.value, setFinishedHeight, setFinishedHeightInput, 6)}
+                  onBlur={(e) => handleDecimalBlur(e.target.value, setFinishedHeight, setFinishedHeightInput, 6)}
                   className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-brand-gold"
-                  step="0.125"
-                  min="0.5"
+                  placeholder="6"
                 />
                 <span className="text-xs text-gray-500">H</span>
               </div>
             </div>
             <p className="text-xs text-gray-500 italic">
-              +0.25″ margin, +0.125″ bleed
+              +{trimMargin}″ trim, +{gripperMargin}″ gripper, +0.125″ bleed
             </p>
+          </div>
+          
+          {/* Advanced Controls Toggle */}
+          <div>
+            <button
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-xs text-brand-indigo font-medium hover:text-brand-gold transition-colors flex items-center"
+            >
+              {showAdvanced ? '▼' : '▶'} Advanced Controls
+            </button>
+            
+            {showAdvanced && (
+              <div className="mt-3 space-y-3 p-3 bg-gray-50 rounded border border-gray-200">
+                {/* Margins */}
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold text-gray-600">Margins</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs text-gray-500">Trim</label>
+                      <input
+                        type="text"
+                        value={trimMarginInput}
+                        onChange={(e) => handleDecimalInput(e.target.value, setTrimMargin, setTrimMarginInput, 0.25)}
+                        onBlur={(e) => handleDecimalBlur(e.target.value, setTrimMargin, setTrimMarginInput, 0.25)}
+                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                        placeholder="0.25"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500">Gripper</label>
+                      <input
+                        type="text"
+                        value={gripperMarginInput}
+                        onChange={(e) => handleDecimalInput(e.target.value, setGripperMargin, setGripperMarginInput, 0.25)}
+                        onBlur={(e) => handleDecimalBlur(e.target.value, setGripperMargin, setGripperMarginInput, 0.25)}
+                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                        placeholder="0.25"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Gaps */}
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold text-gray-600">Spacing</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs text-gray-500">H-Gap</label>
+                      <input
+                        type="text"
+                        value={horizontalGapInput}
+                        onChange={(e) => handleDecimalInput(e.target.value, setHorizontalGap, setHorizontalGapInput, 0.125)}
+                        onBlur={(e) => handleDecimalBlur(e.target.value, setHorizontalGap, setHorizontalGapInput, 0.125)}
+                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                        placeholder="0.125"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500">V-Gap</label>
+                      <input
+                        type="text"
+                        value={verticalGapInput}
+                        onChange={(e) => handleDecimalInput(e.target.value, setVerticalGap, setVerticalGapInput, 0.125)}
+                        onBlur={(e) => handleDecimalBlur(e.target.value, setVerticalGap, setVerticalGapInput, 0.125)}
+                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                        placeholder="0.125"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Orientation Control */}
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-600 mb-1">Cut Orientation</h4>
+                  <select
+                    value={forceOrientation}
+                    onChange={(e) => setForceOrientation(e.target.value as 'auto' | 'portrait' | 'landscape')}
+                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+                  >
+                    <option value="auto">Auto (Best Fit)</option>
+                    <option value="portrait">Force Portrait</option>
+                    <option value="landscape">Force Landscape</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Finished Quantity Needed */}
@@ -249,20 +395,43 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
         <div className="space-y-3">
           <h3 className="font-semibold text-gray-700 text-sm">Layout Results</h3>
           
+          {/* Orientation Comparison */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className={`p-2 rounded border text-xs ${
+              layout.orientation === 'Portrait' ? 'bg-blue-100 border-blue-400 border-l-4' : 'bg-gray-100 border-gray-300'
+            }`}>
+              <div className="font-medium text-gray-700">Portrait Orientation</div>
+              <div className="text-gray-600">
+                {Math.floor((parentWidth - trimMargin * 2 + horizontalGap) / (finishedWidth + bleed * 2 + horizontalGap))} cuts 
+                ({Math.floor((parentWidth - trimMargin * 2 + horizontalGap) / (finishedWidth + bleed * 2 + horizontalGap))} columns × {Math.floor((parentHeight - trimMargin - gripperMargin + verticalGap) / (finishedHeight + bleed * 2 + verticalGap))} rows)
+              </div>
+            </div>
+            <div className={`p-2 rounded border text-xs ${
+              layout.orientation === 'Landscape' ? 'bg-blue-100 border-blue-400 border-l-4' : 'bg-gray-100 border-gray-300'
+            }`}>
+              <div className="font-medium text-gray-700">Landscape Orientation</div>
+              <div className="text-gray-600">
+                {Math.floor((parentWidth - trimMargin * 2 + horizontalGap) / (finishedHeight + bleed * 2 + horizontalGap)) * Math.floor((parentHeight - trimMargin - gripperMargin + verticalGap) / (finishedWidth + bleed * 2 + verticalGap))} cuts 
+                ({Math.floor((parentWidth - trimMargin * 2 + horizontalGap) / (finishedHeight + bleed * 2 + horizontalGap))} columns × {Math.floor((parentHeight - trimMargin - gripperMargin + verticalGap) / (finishedWidth + bleed * 2 + verticalGap))} rows)
+              </div>
+            </div>
+          </div>
+          
+          {/* Best Layout Display */}
           <div className="bg-gradient-to-br from-brand-pale-blue to-blue-50 p-4 rounded-lg border border-brand-darker-blue">
-            <div className="text-center mb-3">
-              <div className="font-bold text-3xl text-brand-indigo">
-                {manualOverride ? manualPiecesPerSheet : layout.total} out
+            <div className="text-center mb-2">
+              <div className="text-xs font-medium text-gray-600 mb-1">
+                {forceOrientation === 'auto' ? 'Best Layout' : `Forced ${forceOrientation.charAt(0).toUpperCase() + forceOrientation.slice(1)}`}
               </div>
-              <div className="text-sm text-gray-600">
-                per sheet {manualOverride ? '(manual)' : '(calculated)'}
+              <div className="font-bold text-2xl text-brand-indigo">
+                {manualOverride ? manualPiecesPerSheet : layout.total} cuts
               </div>
-            </div>
-            <div className="text-xs text-gray-600 text-center mb-2">
-              {layout.cols} columns × {layout.rows} rows
-            </div>
-            <div className="text-xs text-gray-500 text-center mb-3">
-              {layout.orientation} orientation
+              <div className="text-xs text-gray-600">
+                {layout.cols} columns × {layout.rows} rows
+              </div>
+              <div className="text-xs text-gray-500">
+                {layout.orientation} orientation {manualOverride ? '(manual override)' : ''}
+              </div>
             </div>
             
             {/* Total Sheets Needed */}
@@ -340,10 +509,10 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
                   className="bg-white border border-gray-400 relative flex items-center justify-center"
                   style={{
                     position: 'absolute',
-                    top: `${(margin / parentHeight) * 100}%`,
-                    left: `${(margin / parentWidth) * 100}%`,
-                    right: `${(margin / parentWidth) * 100}%`,
-                    bottom: `${(margin / parentHeight) * 100}%`,
+                    top: `${(gripperMargin / parentHeight) * 100}%`,
+                    left: `${(trimMargin / parentWidth) * 100}%`,
+                    right: `${(trimMargin / parentWidth) * 100}%`,
+                    bottom: `${(trimMargin / parentHeight) * 100}%`,
                   }}
                 >
                   {/* Centered imposition area */}
@@ -351,8 +520,8 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
                     <div
                       className={`border ${manualOverride ? 'bg-yellow-100 border-yellow-400' : 'bg-blue-100 border-blue-300'}`}
                       style={{
-                        width: `${(layout.usedWidth / (parentWidth - margin * 2)) * 100}%`,
-                        height: `${(layout.usedHeight / (parentHeight - margin * 2)) * 100}%`
+                        width: `${(layout.usedWidth / (parentWidth - trimMargin * 2)) * 100}%`,
+                        height: `${(layout.usedHeight / (parentHeight - trimMargin - gripperMargin)) * 100}%`
                       }}
                     >
                       {/* Grid of pieces - show manual override or calculated layout */}
@@ -417,20 +586,30 @@ const SheetLayoutSection: React.FC<SheetLayoutSectionProps> = ({ onLayoutUpdate,
             </div>
             
             {/* Legend */}
-            <div className="flex justify-center gap-4 text-xs text-gray-600">
+            <div className="flex justify-center gap-3 text-xs text-gray-600">
               <div className="flex items-center">
                 <div className="w-3 h-3 border border-red-400 border-dashed mr-1"></div>
                 <span>Parent</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-white border border-gray-400 mr-1"></div>
-                <span>Margin</span>
+                <span>Trim+Grip</span>
               </div>
               <div className="flex items-center">
                 <div className={`w-3 h-3 border mr-1 ${manualOverride ? 'bg-yellow-400 border-yellow-600' : 'bg-blue-400 border-blue-600'}`}></div>
-                <span>Pieces {manualOverride ? '(Manual)' : '(Calculated)'}</span>
+                <span>{manualOverride ? 'Manual' : 'Auto'}</span>
               </div>
             </div>
+            
+            {/* Utilization Info */}
+            {layout.total > 0 && (
+              <div className="mt-2 text-center">
+                <div className="text-xs text-gray-500">
+                  Utilization: {layout.utilization.toFixed(1)}% | 
+                  Waste: {((parentWidth * parentHeight) - (layout.usedWidth * layout.usedHeight)).toFixed(2)} sq in
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
