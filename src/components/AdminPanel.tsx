@@ -11,7 +11,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
   const [paperStocks, setPaperStocks] = useState<PaperStock[]>(defaultPaperStocks);
   const [consumables, setConsumables] = useState<Consumable[]>(defaultConsumables);
   const [masterConfig, setMasterConfig] = useState<MasterConfig>(defaultMasterConfig);
-  const [activeTab, setActiveTab] = useState<'paper' | 'consumables' | 'labor' | 'setup'>('paper');
+  const [activeTab, setActiveTab] = useState<'paper' | 'consumables' | 'labor' | 'setup' | 'coating' | 'business' | 'postal' | 'profit'>('paper');
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -57,7 +57,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
     }
   };
 
-  const updatePaperPrice = (index: number, size: '8.5x11' | '14x20', value: number) => {
+  const updatePaperPrice = (index: number, size: '8.5x11' | '13x20' | '14x20', value: number) => {
     const newStocks = [...paperStocks];
     newStocks[index].prices[size] = value;
     setPaperStocks(newStocks);
@@ -97,9 +97,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
       manufacturer: 'Custom',
       prices: {
         '8.5x11': 0.000,
+        '13x20': 0.000,
         '14x20': 0.000
       },
-      availableSizes: ['8.5x11', '14x20']
+      availableSizes: ['8.5x11', '13x20', '14x20']
     };
     setPaperStocks([...paperStocks, newPaper]);
   };
@@ -115,7 +116,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
     const newStocks = [...paperStocks];
     if (field === 'availableSizes') {
       // Handle checkbox changes for available sizes
-      const currentSizes = newStocks[index].availableSizes || ['8.5x11', '14x20'];
+      const currentSizes = newStocks[index].availableSizes || ['8.5x11', '13x20', '14x20'];
       if (currentSizes.includes(value)) {
         newStocks[index].availableSizes = currentSizes.filter(size => size !== value);
       } else {
@@ -223,6 +224,46 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
             >
               Setup & Config
             </button>
+            <button
+              onClick={() => setActiveTab('coating')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                activeTab === 'coating'
+                  ? 'bg-white text-brand-indigo shadow'
+                  : 'text-gray-600 hover:text-brand-indigo'
+              }`}
+            >
+              Coating/Glosser
+            </button>
+            <button
+              onClick={() => setActiveTab('business')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                activeTab === 'business'
+                  ? 'bg-white text-brand-indigo shadow'
+                  : 'text-gray-600 hover:text-brand-indigo'
+              }`}
+            >
+              Business Cards
+            </button>
+            <button
+              onClick={() => setActiveTab('postal')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                activeTab === 'postal'
+                  ? 'bg-white text-brand-indigo shadow'
+                  : 'text-gray-600 hover:text-brand-indigo'
+              }`}
+            >
+              Postal Services
+            </button>
+            <button
+              onClick={() => setActiveTab('profit')}
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                activeTab === 'profit'
+                  ? 'bg-white text-brand-indigo shadow'
+                  : 'text-gray-600 hover:text-brand-indigo'
+              }`}
+            >
+              Profit Settings
+            </button>
           </div>
         </div>
 
@@ -250,6 +291,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
                       <th className="border border-gray-300 px-4 py-2 text-left">Manufacturer</th>
                       <th className="border border-gray-300 px-4 py-2 text-left">Category</th>
                       <th className="border border-gray-300 px-4 py-2 text-center">8.5"x11" Price</th>
+                      <th className="border border-gray-300 px-4 py-2 text-center">13"x20" Price</th>
                       <th className="border border-gray-300 px-4 py-2 text-center">14"x20" Price</th>
                       <th className="border border-gray-300 px-4 py-2 text-center">Available Sizes</th>
                       <th className="border border-gray-300 px-4 py-2 text-center">Actions</th>
@@ -304,6 +346,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
                             <span className="text-gray-500">$</span>
                             <input
                               type="number"
+                              value={stock.prices['13x20']}
+                              onChange={(e) => updatePaperPrice(index, '13x20', parseFloat(e.target.value) || 0)}
+                              className="w-24 px-2 py-1 border rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                              step="0.001"
+                              min="0"
+                            />
+                          </div>
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <div className="flex items-center space-x-1">
+                            <span className="text-gray-500">$</span>
+                            <input
+                              type="number"
                               value={stock.prices['14x20']}
                               onChange={(e) => updatePaperPrice(index, '14x20', parseFloat(e.target.value) || 0)}
                               className="w-24 px-2 py-1 border rounded focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
@@ -322,6 +377,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
                                 className="w-3 h-3"
                               />
                               <span>8.5×11</span>
+                            </label>
+                            <label className="flex items-center space-x-1 text-xs">
+                              <input
+                                type="checkbox"
+                                checked={stock.availableSizes?.includes('13x20') ?? true}
+                                onChange={() => updatePaperField(index, 'availableSizes', '13x20')}
+                                className="w-3 h-3"
+                              />
+                              <span>13×20</span>
                             </label>
                             <label className="flex items-center space-x-1 text-xs">
                               <input
@@ -645,6 +709,382 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave }) => {
                         max="100"
                       />
                       <span className="text-gray-500">%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Protective Coating/Glosser Tab */}
+          {activeTab === 'coating' && (
+            <div>
+              <h3 className="text-lg font-bold text-brand-indigo mb-4">Protective Coating & Glosser Configuration</h3>
+              
+              <div className="space-y-6">
+                {/* Basic Coating Settings */}
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-3">Basic Coating Settings</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Gloss Cost per Side
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.protectiveCoating.glossCostPerSide}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            protectiveCoating: {
+                              ...masterConfig.protectiveCoating,
+                              glossCostPerSide: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.01"
+                          min="0"
+                        />
+                        <span className="text-sm text-gray-500">/side</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Glosser Consumables */}
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-3">Glosser Consumables</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Glosser Web Cost
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.protectiveCoating.glosserWebCost}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            protectiveCoating: {
+                              ...masterConfig.protectiveCoating,
+                              glosserWebCost: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label className="block text-xs font-semibold text-gray-600 mb-1">
+                          Expected Life (sheets)
+                        </label>
+                        <input
+                          type="number"
+                          value={masterConfig.protectiveCoating.expectedLifeGlosserWeb}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            protectiveCoating: {
+                              ...masterConfig.protectiveCoating,
+                              expectedLifeGlosserWeb: parseInt(e.target.value) || 0
+                            }
+                          })}
+                          className="w-full px-2 py-1 border rounded focus:ring-1 focus:ring-brand-gold text-sm"
+                          min="0"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Pressure Roller Cost
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.protectiveCoating.pressureRollerCost}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            protectiveCoating: {
+                              ...masterConfig.protectiveCoating,
+                              pressureRollerCost: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label className="block text-xs font-semibold text-gray-600 mb-1">
+                          Expected Life (sheets)
+                        </label>
+                        <input
+                          type="number"
+                          value={masterConfig.protectiveCoating.expectedLifePressureRoller}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            protectiveCoating: {
+                              ...masterConfig.protectiveCoating,
+                              expectedLifePressureRoller: parseInt(e.target.value) || 0
+                            }
+                          })}
+                          className="w-full px-2 py-1 border rounded focus:ring-1 focus:ring-brand-gold text-sm"
+                          min="0"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Cleaning Pads Cost
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.protectiveCoating.cleaningPadsCost}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            protectiveCoating: {
+                              ...masterConfig.protectiveCoating,
+                              cleaningPadsCost: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label className="block text-xs font-semibold text-gray-600 mb-1">
+                          Expected Life (sheets)
+                        </label>
+                        <input
+                          type="number"
+                          value={masterConfig.protectiveCoating.expectedLifeCleaningPads}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            protectiveCoating: {
+                              ...masterConfig.protectiveCoating,
+                              expectedLifeCleaningPads: parseInt(e.target.value) || 0
+                            }
+                          })}
+                          className="w-full px-2 py-1 border rounded focus:ring-1 focus:ring-brand-gold text-sm"
+                          min="0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Business Cards Tab */}
+          {activeTab === 'business' && (
+            <div>
+              <h3 className="text-lg font-bold text-brand-indigo mb-4">Business Card Configuration</h3>
+              
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-3">Default Settings</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Default Cards per Sheet
+                      </label>
+                      <input
+                        type="number"
+                        value={masterConfig.businessCards.defaultPerSheet}
+                        onChange={(e) => setMasterConfig({
+                          ...masterConfig,
+                          businessCards: {
+                            ...masterConfig.businessCards,
+                            defaultPerSheet: parseInt(e.target.value) || 0
+                          }
+                        })}
+                        className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                        min="1"
+                      />
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Labor Cost per Sheet
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.businessCards.laborCostPerSheet}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            businessCards: {
+                              ...masterConfig.businessCards,
+                              laborCostPerSheet: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.01"
+                          min="0"
+                        />
+                        <span className="text-sm text-gray-500">/sheet</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Postal Services Tab */}
+          {activeTab === 'postal' && (
+            <div>
+              <h3 className="text-lg font-bold text-brand-indigo mb-4">Postal Services Configuration</h3>
+              
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-3">Default Settings</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Default Handling Fee
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.postalServices.defaultHandlingFee}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            postalServices: {
+                              ...masterConfig.postalServices,
+                              defaultHandlingFee: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Default Postal Rate
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.postalServices.defaultPostalRate}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            postalServices: {
+                              ...masterConfig.postalServices,
+                              defaultPostalRate: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.0001"
+                          min="0"
+                        />
+                        <span className="text-sm text-gray-500">/piece</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Profit Settings Tab */}
+          {activeTab === 'profit' && (
+            <div>
+              <h3 className="text-lg font-bold text-brand-indigo mb-4">Profit Calculation Settings</h3>
+              
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-3">Default Profit Configuration</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg max-w-sm">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Default Cost Multiplier
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        value={masterConfig.profitSettings.defaultCostMultiplier}
+                        onChange={(e) => setMasterConfig({
+                          ...masterConfig,
+                          profitSettings: {
+                            ...masterConfig.profitSettings,
+                            defaultCostMultiplier: parseFloat(e.target.value) || 1.0
+                          }
+                        })}
+                        className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                        step="0.01"
+                        min="1.0"
+                      />
+                      <span className="text-gray-500">×</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      1.25 = 25% profit margin (cost × 1.25)
+                    </p>
+                  </div>
+                </div>
+
+                {/* Facility & Overhead Charges */}
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-3">Facility & Overhead Charges</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Electrical Rate
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.facilityOverheads.electrical}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            facilityOverheads: {
+                              ...masterConfig.facilityOverheads,
+                              electrical: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        T-1 Service Rate
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          value={masterConfig.facilityOverheads.toneService}
+                          onChange={(e) => setMasterConfig({
+                            ...masterConfig,
+                            facilityOverheads: {
+                              ...masterConfig.facilityOverheads,
+                              toneService: parseFloat(e.target.value) || 0
+                            }
+                          })}
+                          className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

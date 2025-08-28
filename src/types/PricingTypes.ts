@@ -6,9 +6,10 @@ export interface PaperStock {
   manufacturer: string;
   prices: {
     '8.5x11': number;
+    '13x20': number;
     '14x20': number;
   };
-  availableSizes?: ('8.5x11' | '14x20')[]; // Optional - if not specified, available for all
+  availableSizes?: ('8.5x11' | '13x20' | '14x20')[]; // Optional - if not specified, available for all
   isCustom?: boolean; // Flag for custom paper
 }
 
@@ -36,6 +37,10 @@ export interface JobConfig {
       '4/0': number;
       '4/4': number;
     };
+    '13x20': {
+      '4/0': number;
+      '4/4': number;
+    };
     '14x20': {
       '4/0': number;
       '4/4': number;
@@ -49,10 +54,6 @@ export interface JobConfig {
   variableDataTime: number;
   binderyTime: number;
   
-  // Service options
-  outsourcePostal: boolean;
-  postalHandlingFee: number;
-  postalRate: number;
   
   // Business cards
   businessCards: {
@@ -62,15 +63,50 @@ export interface JobConfig {
     sidesGlossed: number;
   };
   
-  // Additional services
-  mailingList: boolean;
-  glosserData: boolean;
   
   // Overhead
   overheadRate: number;
   
   // Profit
   costMultiplier: number;
+  calibratedMultiplier?: number; // Behind-the-scenes multiplier for purple border items
+  nexpressLabor4_4Rate?: number; // Editable 4/4 Nexpress labor rate per sheet
+}
+
+// Diagnostic information for multiplier calibration
+export interface DiagnosticInfo {
+  allBaseCosts: number;
+  purpleBorderCostsBase: number;
+  nonPurpleBorderCosts: number;
+  currentMultiplier: number;
+  currentSubtotalWithMultiplier: number;
+  
+  // Calibrated multiplier curve information
+  calibratedMultiplierInfo: {
+    totalSheets: number;
+    appliedMultiplier: number;
+    appliedPercentage: number;
+    curveDetails: {
+      lowQtyThreshold: number;
+      highQtyThreshold: number;
+      lowMultiplier: number;
+      highMultiplier: number;
+      isOverride: boolean;
+    };
+  };
+  
+  baseCostBreakdown: {
+    paper: number;
+    protectiveCoating: number;
+    consumables: number;
+    nexpressLabor: number;
+    businessCards: number;
+    prePress: number;
+    variableData: number;
+    bindery: number;
+    postal: number;
+  };
+  calculateRequiredMultiplier: (targetSubtotal: number) => number;
 }
 
 // Calculation results
@@ -82,6 +118,7 @@ export interface CalculationResults {
     sheets: number;
     costPerSheet: number;
     totalCost: number;
+    setupSheets: number; // Show setup sheets used
   }>;
   protectiveCoatingCost: number;
   protectiveCoatingDetails: {
@@ -94,6 +131,8 @@ export interface CalculationResults {
   consumablesCosts: Array<{
     name: string;
     cost: number;
+    sheets?: number; // Show sheets used for calculation
+    rate?: number;   // Show rate used
   }>;
   totalConsumables: number;
   
@@ -102,6 +141,16 @@ export interface CalculationResults {
     variableData: number;
     bindery: number;
     nexpress: number;
+    nexpressDetails?: { // Detailed Nexpress breakdown
+      totalSheets: number;
+      rate: number;
+      colorBreakdown: Array<{
+        size: string;
+        colors: string;
+        quantity: number;
+        cost: number;
+      }>;
+    };
     glosser: number;
     electrical: number;
     toneService: number;
@@ -120,6 +169,28 @@ export interface CalculationResults {
     total: number;
   };
   
+  // Enhanced totals with more detail
+  calculationBreakdown: {
+    totalPaperCost: number;
+    totalConsumables: number;
+    totalLaborCost: number;
+    totalPostalCost: number;
+    totalBusinessCards: number;
+    subtotal: number;
+    overhead: number;
+    overheadRate: number;
+    totalCost: number;
+    profit: number;
+    profitRate: number;
+    finalPrice: number;
+    costPerPiece: number;
+    yield: number;
+  };
+  
+  // Diagnostic information
+  diagnosticInfo?: DiagnosticInfo;
+  
+  // Legacy fields for backward compatibility
   subtotal: number;
   overhead: number;
   totalCost: number;
@@ -154,5 +225,26 @@ export interface MasterConfig {
     extraSheetsPerJob: number;
     cleanerSheetsPerJob: number;
     proofsPerJob: number;
+  };
+  // New configuration sections
+  protectiveCoating: {
+    glossCostPerSide: number;
+    glosserWebCost: number;
+    pressureRollerCost: number;
+    cleaningPadsCost: number;
+    expectedLifeGlosserWeb: number;
+    expectedLifePressureRoller: number;
+    expectedLifeCleaningPads: number;
+  };
+  businessCards: {
+    defaultPerSheet: number;
+    laborCostPerSheet: number;
+  };
+  postalServices: {
+    defaultHandlingFee: number;
+    defaultPostalRate: number;
+  };
+  profitSettings: {
+    defaultCostMultiplier: number;
   };
 }

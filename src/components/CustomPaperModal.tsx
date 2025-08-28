@@ -6,6 +6,7 @@ interface CustomPaperModalProps {
   onSave: (customPaper: CustomPaperData) => void;
   currentPrices?: {
     '8.5x11': number;
+    '13x20': number;
     '14x20': number;
   };
 }
@@ -16,6 +17,7 @@ export interface CustomPaperData {
   type?: 'cover' | 'text' | '';
   prices: {
     '8.5x11': number;
+    '13x20': number;
     '14x20': number;
   };
   saveToList?: boolean;
@@ -25,7 +27,7 @@ const CustomPaperModal: React.FC<CustomPaperModalProps> = ({
   isOpen, 
   onClose, 
   onSave,
-  currentPrices = { '8.5x11': 0, '14x20': 0 }
+  currentPrices = { '8.5x11': 0, '13x20': 0, '14x20': 0 }
 }) => {
   const [customData, setCustomData] = useState<CustomPaperData>({
     name: '',
@@ -111,7 +113,7 @@ const CustomPaperModal: React.FC<CustomPaperModalProps> = ({
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Pricing per Sheet
           </label>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-xs text-gray-600 mb-1">8.5"x11"</label>
               <div className="flex items-center">
@@ -126,7 +128,27 @@ const CustomPaperModal: React.FC<CustomPaperModalProps> = ({
                       '8.5x11': parseFloat(e.target.value) || 0
                     }
                   })}
-                  className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                  className="flex-1 px-2 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold text-sm"
+                  step="0.001"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">13"x20"</label>
+              <div className="flex items-center">
+                <span className="text-gray-500 mr-1">$</span>
+                <input
+                  type="number"
+                  value={customData.prices['13x20']}
+                  onChange={(e) => setCustomData({
+                    ...customData, 
+                    prices: {
+                      ...customData.prices,
+                      '13x20': parseFloat(e.target.value) || 0
+                    }
+                  })}
+                  className="flex-1 px-2 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold text-sm"
                   step="0.001"
                   min="0"
                 />
@@ -146,7 +168,7 @@ const CustomPaperModal: React.FC<CustomPaperModalProps> = ({
                       '14x20': parseFloat(e.target.value) || 0
                     }
                   })}
-                  className="flex-1 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+                  className="flex-1 px-2 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold text-sm"
                   step="0.001"
                   min="0"
                 />

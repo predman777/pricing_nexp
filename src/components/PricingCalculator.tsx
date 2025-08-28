@@ -5,9 +5,9 @@ import { validateInputs, calculatePricingWithData } from '../services/calculatio
 import JobInfoSection from './JobInfoSection';
 import PaperSelectionSection from './PaperSelectionSection';
 import LaborSection from './LaborSection';
-import ServicesSection from './ServicesSection';
 import CalculationResultsSection from './CalculationResultsSection';
 import CustomPaperModal, { CustomPaperData } from './CustomPaperModal';
+import SheetLayoutSection from './SheetLayoutSection';
 
 interface PricingCalculatorProps {
   pricingData: {
@@ -37,6 +37,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ pricingData }) =>
     selectedPaper: paperStocks[0].id,
     quantities: {
       '8.5x11': { '4/0': 0, '4/4': 0 },
+      '13x20': { '4/0': 0, '4/4': 0 },
       '14x20': { '4/0': 0, '4/4': 0 }
     },
     sheetsGlossed: 0,
@@ -44,22 +45,23 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ pricingData }) =>
     prePresTime: 0.1,
     variableDataTime: 0,
     binderyTime: 0.25,
-    outsourcePostal: false,
-    postalHandlingFee: 0,
-    postalRate: 0,
     businessCards: {
       quantity: 0,
       perSheet: 30,
       topCoat: false,
       sidesGlossed: 0
     },
-    mailingList: false,
-    glosserData: false,
     overheadRate: 0.25,
     costMultiplier: 1.25
+    // calibratedMultiplier will use automatic curve unless overridden
   });
 
   const [results, setResults] = useState<CalculationResults | null>(null);
+  const [layoutInfo, setLayoutInfo] = useState({
+    parentSheetSize: '13×20',
+    piecesPerSheet: 0,
+    totalSheetsNeeded: 0
+  });
   
   // Load saved custom papers from localStorage
   useEffect(() => {
@@ -76,6 +78,20 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ pricingData }) =>
       setShowCustomPaperModal(true);
     }
   }, [jobConfig.selectedPaper, paperStocks, showCustomPaperModal]);
+
+  // Calculate total sheets needed whenever yield or pieces per sheet changes
+  useEffect(() => {
+    const totalSheets = jobConfig.yield > 0 && layoutInfo.piecesPerSheet > 0 
+      ? Math.ceil(jobConfig.yield / layoutInfo.piecesPerSheet) 
+      : 0;
+    
+    if (totalSheets !== layoutInfo.totalSheetsNeeded) {
+      setLayoutInfo(prev => ({
+        ...prev,
+        totalSheetsNeeded: totalSheets
+      }));
+    }
+  }, [jobConfig.yield, layoutInfo.piecesPerSheet, layoutInfo.totalSheetsNeeded]);
 
   // Calculate results whenever jobConfig or pricing data changes
   useEffect(() => {
@@ -132,7 +148,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ pricingData }) =>
           category: customPaperData.type || 'specialty',
           manufacturer: 'Custom',
           prices: customPaperData.prices,
-          availableSizes: ['8.5x11', '14x20']
+          availableSizes: ['8.5x11', '13x20', '14x20']
         };
         
         const updatedCustomPapers = [...customPapers, newCustomPaper];
@@ -151,7 +167,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ pricingData }) =>
     setShowCustomPaperModal(false);
     // If user closes without saving, switch back to the first paper
     const selectedPaper = paperStocks.find(p => p.id === jobConfig.selectedPaper);
-    if (selectedPaper?.isCustom && selectedPaper.prices['8.5x11'] === 0 && selectedPaper.prices['14x20'] === 0) {
+    if (selectedPaper?.isCustom && selectedPaper.prices['8.5x11'] === 0 && selectedPaper.prices['13x20'] === 0 && selectedPaper.prices['14x20'] === 0) {
       updateJobConfig({ selectedPaper: paperStocks[0]?.id });
     }
   };
@@ -181,25 +197,30 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ pricingData }) =>
             onUpdate={updateJobConfig}
           />
 
+          {/* Sheet Layout Calculator */}
+          <SheetLayoutSection 
+            yieldValue={jobConfig.yield}
+            onYieldUpdate={(yieldValue) => updateJobConfig({ yield: yieldValue })}
+            onLayoutUpdate={(piecesPerSheet: number) => {
+              setLayoutInfo(prev => ({
+                ...prev,
+                piecesPerSheet
+              }));
+            }}
+          />
+
           {/* Paper Selection and Quantities */}
           <PaperSelectionSection
             jobConfig={jobConfig}
             onUpdate={updateJobConfig}
             paperStocks={paperStocks}
+            parentSheetSize={layoutInfo.parentSheetSize}
+            totalSheetsNeeded={layoutInfo.totalSheetsNeeded}
+            piecesPerSheet={layoutInfo.piecesPerSheet}
           />
 
-          {/* Labor Section */}
-          <LaborSection
-            jobConfig={jobConfig}
-            onUpdate={updateJobConfig}
-            selectedPaper={paperStocks.find(p => p.id === jobConfig.selectedPaper)}
-          />
-
-          {/* Services Section */}
-          <ServicesSection
-            jobConfig={jobConfig}
-            onUpdate={updateJobConfig}
-          />
+          {/* Labor Section - Removed from UI, calculations handled in background */}
+          {/* Services Section - Removed from UI, overhead rate is fixed at 25% */}
 
           {/* Calculation Results */}
           <CalculationResultsSection

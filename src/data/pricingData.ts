@@ -9,9 +9,10 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'Pacesetter',
     prices: {
       '8.5x11': 0.400,  // Confirmed from DBF Master
-      '14x20': 0.105   // Confirmed from DBF Master
+      '13x20': 0.105,   // Same as 14x20 initially
+      '14x20': 0.105    // Confirmed from DBF Master
     },
-    availableSizes: ['8.5x11', '14x20'] // Available for both sizes
+    availableSizes: ['8.5x11', '13x20', '14x20'] // Available for all sizes
   },
   {
     id: '100-cover-10pt-gloss',
@@ -20,9 +21,10 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'Pacesetter',
     prices: {
       '8.5x11': 0.059,
+      '13x20': 0.135,  // Same as 14x20 initially
       '14x20': 0.135
     },
-    availableSizes: ['8.5x11', '14x20']
+    availableSizes: ['8.5x11', '13x20', '14x20']
   },
   {
     id: '50-text-offset',
@@ -31,9 +33,10 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'Boise',
     prices: {
       '8.5x11': 0.030,
+      '13x20': 0.049,  // Same as 14x20 initially
       '14x20': 0.049
     },
-    availableSizes: ['8.5x11', '14x20']
+    availableSizes: ['8.5x11', '13x20', '14x20']
   },
   {
     id: '80-text-gloss',
@@ -42,9 +45,10 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'Pacesetter',
     prices: {
       '8.5x11': 0.040,
+      '13x20': 0.057,  // Same as 14x20 initially
       '14x20': 0.057
     },
-    availableSizes: ['8.5x11', '14x20']
+    availableSizes: ['8.5x11', '13x20', '14x20']
   },
   {
     id: '100-text-gloss',
@@ -53,9 +57,10 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'Pacesetter',
     prices: {
       '8.5x11': 0.040,
+      '13x20': 0.069,  // Same as 14x20 initially
       '14x20': 0.069
     },
-    availableSizes: ['8.5x11', '14x20']
+    availableSizes: ['8.5x11', '13x20', '14x20']
   },
   {
     id: '70-solar-white',
@@ -64,7 +69,8 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'Classic Crest',
     prices: {
       '8.5x11': 0.100,
-      '14x20': 0.000  // Greyed out in Excel screenshot
+      '13x20': 0.000,  // Not available
+      '14x20': 0.000   // Greyed out in Excel screenshot
     },
     availableSizes: ['8.5x11'] // Only 8.5x11 available based on screenshot
   },
@@ -75,9 +81,10 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'Top Kote',
     prices: {
       '8.5x11': 0.000,  // Greyed out in Excel screenshot
+      '13x20': 0.165,   // Same as 14x20 initially
       '14x20': 0.165
     },
-    availableSizes: ['14x20'] // Only 14x20 available based on screenshot
+    availableSizes: ['13x20', '14x20'] // Available for both large sizes
   },
   {
     id: '80-text-dull',
@@ -86,9 +93,10 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'Titan Dull',
     prices: {
       '8.5x11': 0.000, // Not available
+      '13x20': 0.078,  // Same as 14x20 initially
       '14x20': 0.078
     },
-    availableSizes: ['14x20'] // Only available in 14x20
+    availableSizes: ['13x20', '14x20'] // Available for both large sizes
   },
   {
     id: '60-label-gloss',
@@ -97,7 +105,8 @@ export const paperStocks: PaperStock[] = [
     manufacturer: '',
     prices: {
       '8.5x11': 0.000, // All greyed out in Excel screenshot
-      '14x20': 0.000  // All greyed out in Excel screenshot
+      '13x20': 0.000,  // All greyed out in Excel screenshot
+      '14x20': 0.000   // All greyed out in Excel screenshot
     },
     availableSizes: [] // Not available in any size based on screenshot
   },
@@ -108,7 +117,8 @@ export const paperStocks: PaperStock[] = [
     manufacturer: '',
     prices: {
       '8.5x11': 0.000, // All greyed out in Excel screenshot
-      '14x20': 0.000  // All greyed out in Excel screenshot
+      '13x20': 0.000,  // All greyed out in Excel screenshot
+      '14x20': 0.000   // All greyed out in Excel screenshot
     },
     availableSizes: [] // Not available in any size based on screenshot
   },
@@ -119,7 +129,8 @@ export const paperStocks: PaperStock[] = [
     manufacturer: '',
     prices: {
       '8.5x11': 0.000, // All greyed out in Excel screenshot
-      '14x20': 0.000  // All greyed out in Excel screenshot
+      '13x20': 0.000,  // All greyed out in Excel screenshot
+      '14x20': 0.000   // All greyed out in Excel screenshot
     },
     availableSizes: [] // Not available in any size based on screenshot
   },
@@ -130,9 +141,10 @@ export const paperStocks: PaperStock[] = [
     manufacturer: 'User Defined',
     prices: {
       '8.5x11': 0.000,
+      '13x20': 0.000,
       '14x20': 0.000
     },
-    availableSizes: ['8.5x11', '14x20'], // Available for all sizes
+    availableSizes: ['8.5x11', '13x20', '14x20'], // Available for all sizes
     isCustom: true
   }
 ];
@@ -221,6 +233,27 @@ export const masterConfig: MasterConfig = {
     extraSheetsPerJob: 15,
     cleanerSheetsPerJob: 10,
     proofsPerJob: 5
+  },
+  // New configuration sections
+  protectiveCoating: {
+    glossCostPerSide: 0.01, // $0.01 per side
+    glosserWebCost: 0.000, // To be configured
+    pressureRollerCost: 0.000, // To be configured
+    cleaningPadsCost: 0.000, // To be configured
+    expectedLifeGlosserWeb: 150000, // sheets
+    expectedLifePressureRoller: 160000, // sheets
+    expectedLifeCleaningPads: 200000 // sheets
+  },
+  businessCards: {
+    defaultPerSheet: 30, // Default business cards per sheet
+    laborCostPerSheet: 0.50 // Default labor cost per sheet for business cards
+  },
+  postalServices: {
+    defaultHandlingFee: 0.00, // Default postal handling fee
+    defaultPostalRate: 0.0000 // Default postal rate per piece
+  },
+  profitSettings: {
+    defaultCostMultiplier: 1.25 // Default 25% profit (125% of cost)
   }
 };
 

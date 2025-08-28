@@ -49,7 +49,7 @@ const LaborSection: React.FC<LaborSectionProps> = ({ jobConfig, onUpdate, select
     <div className="bg-white rounded-xl shadow-lg p-6 border border-brand-darker-blue">
       <h2 className="text-2xl font-bold text-brand-indigo mb-6 font-display">Labor & Outsourcing</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {/* Pre Press Time */}
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -134,11 +134,35 @@ const LaborSection: React.FC<LaborSectionProps> = ({ jobConfig, onUpdate, select
               readOnly
               className="w-24 px-3 py-2 bg-gray-100 border-2 border-gray-200 rounded-lg text-gray-600 cursor-not-allowed text-sm"
             />
-            <span className="text-sm text-gray-500 whitespace-nowrap">$0.045/sheet</span>
+            <span className="text-sm text-gray-500 whitespace-nowrap">$0.045/sheet (4/0)</span>
           </div>
           <p className="text-xs text-gray-500 mt-1">
             Cost: <span className="font-semibold text-blue-700">
               ${nexpressLabor.toFixed(2)}
+            </span>
+          </p>
+        </div>
+        
+        {/* 4/4 Nexpress Labor Rate */}
+        <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            4/4 Labor Rate (/sheet)
+          </label>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500">$</span>
+            <input
+              type="number"
+              value={jobConfig.nexpressLabor4_4Rate || ''}
+              onChange={(e) => onUpdate({ nexpressLabor4_4Rate: e.target.value === '' ? undefined : parseFloat(e.target.value) || 0 })}
+              className="w-20 px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+              min="0"
+              step="0.001"
+              placeholder="0.079"
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Default: <span className="font-semibold text-orange-700">
+              $0.079 (76% increase)
             </span>
           </p>
         </div>
