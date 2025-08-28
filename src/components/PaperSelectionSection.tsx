@@ -134,6 +134,27 @@ const PaperSelectionSection: React.FC<PaperSelectionSectionProps> = ({
     }
   }, [totalSheetsNeeded]); // Only depend on totalSheetsNeeded to avoid infinite loop
 
+  // Auto-update the currently active toggle button's quantity when totalSheetsNeeded changes
+  React.useEffect(() => {
+    if (totalSheetsNeeded > 0) {
+      const current4_0 = jobConfig.quantities['13x20']['4/0'];
+      const current4_4 = jobConfig.quantities['13x20']['4/4'];
+      
+      // If 4/0 is currently active, update its quantity
+      if (current4_0 > 0 && current4_4 === 0) {
+        const newQuantities = { ...jobConfig.quantities };
+        newQuantities['13x20']['4/0'] = totalSheetsNeeded;
+        onUpdate({ quantities: newQuantities });
+      }
+      // If 4/4 is currently active, update its quantity
+      else if (current4_4 > 0 && current4_0 === 0) {
+        const newQuantities = { ...jobConfig.quantities };
+        newQuantities['13x20']['4/4'] = totalSheetsNeeded;
+        onUpdate({ quantities: newQuantities });
+      }
+    }
+  }, [totalSheetsNeeded, jobConfig.quantities, onUpdate]);
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 border border-brand-darker-blue">
       <h2 className="text-2xl font-bold text-brand-indigo mb-6 font-display">Paper & Size Selection</h2>
